@@ -1,0 +1,352 @@
+/* ============================================================
+   蛋殼喵 Emoji 字型樣式
+   @author: DaiEn
+   ============================================================ */
+
+/* 字型宣告 */
+@font-face {
+	font-family: 'CatEmoji';
+	font-style: normal;
+	font-display: block;
+	src: /*url(EggshellCat.woff2) format("woff2"),*/
+		url(EggshellCat.woff) format("woff"),
+		url(EggshellCat.ttf) format("truetype");
+}
+
+/* 基礎樣式：所有 .cat 都套用這個字型 */
+.cat {
+	font-family: 'CatEmoji';
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-font-smoothing: antialiased;
+	display: inline-block;
+	font-style: normal;
+	font-variant: normal;
+	text-rendering: auto;
+	font-weight: 300;
+	line-height: 1.2;
+}
+
+/* 尺寸：大 */
+.cat-lg {
+	font-size: 1.33333em;
+	line-height: .75em;
+	vertical-align: -.0667em;
+}
+
+/* 尺寸：小 / 極小 */
+.cat-xs { font-size: .75em; }
+.cat-sm { font-size: .875em; }
+.cat-min { font-size: 0.8em; }
+
+/* 尺寸：固定 px */
+.cat-10px { font-size: 10px; }
+.cat-12px { font-size: 12px; }
+.cat-14px { font-size: 14px; }
+.cat-16px { font-size: 16px; }
+.cat-18px { font-size: 18px; }
+.cat-20px { font-size: 20px; }
+.cat-22px { font-size: 22px; }
+.cat-24px { font-size: 24px; }
+
+/* 尺寸：倍數 */
+.cat-1x { font-size: 1em; }
+.cat-2x { font-size: 2em; }
+.cat-3x { font-size: 3em; }
+.cat-4x { font-size: 4em; }
+.cat-5x { font-size: 5em; }
+.cat-6x { font-size: 6em; }
+.cat-7x { font-size: 7em; }
+.cat-8x { font-size: 8em; }
+.cat-9x { font-size: 9em; }
+.cat-10x { font-size: 10em; }
+
+/* 固定寬：置中對齊 */
+.cat-fw {
+	text-align: center;
+	width: 1.25em;
+}
+
+/* 黑色 50% 透明 */
+.cat-rgba-text {
+	color: rgba(0, 0, 0, 0.5);
+}
+
+/* ============================================================
+   112 個貓咪 emoji：PUA-A U+F0000 ~ U+F006F
+   ============================================================ */
+.cat-001:before { content: "\F0000"; }
+.cat-002:before { content: "\F0001"; }
+.cat-003:before { content: "\F0002"; }
+.cat-004:before { content: "\F0003"; }
+.cat-005:before { content: "\F0004"; }
+.cat-006:before { content: "\F0005"; }
+.cat-007:before { content: "\F0006"; }
+.cat-008:before { content: "\F0007"; }
+.cat-009:before { content: "\F0008"; }
+.cat-010:before { content: "\F0009"; }
+.cat-011:before { content: "\F000A"; }
+.cat-012:before { content: "\F000B"; }
+.cat-013:before { content: "\F000C"; }
+.cat-014:before { content: "\F000D"; }
+.cat-015:before { content: "\F000E"; }
+.cat-016:before { content: "\F000F"; }
+.cat-017:before { content: "\F0010"; }
+.cat-018:before { content: "\F0011"; }
+.cat-019:before { content: "\F0012"; }
+.cat-020:before { content: "\F0013"; }
+.cat-021:before { content: "\F0014"; }
+.cat-022:before { content: "\F0015"; }
+.cat-023:before { content: "\F0016"; }
+.cat-024:before { content: "\F0017"; }
+.cat-025:before { content: "\F0018"; }
+.cat-026:before { content: "\F0019"; }
+.cat-027:before { content: "\F001A"; }
+.cat-028:before { content: "\F001B"; }
+.cat-029:before { content: "\F001C"; }
+.cat-030:before { content: "\F001D"; }
+.cat-031:before { content: "\F001E"; }
+.cat-032:before { content: "\F001F"; }
+.cat-033:before { content: "\F0020"; }
+.cat-034:before { content: "\F0021"; }
+.cat-035:before { content: "\F0022"; }
+.cat-036:before { content: "\F0023"; }
+.cat-037:before { content: "\F0024"; }
+.cat-038:before { content: "\F0025"; }
+.cat-039:before { content: "\F0026"; }
+.cat-040:before { content: "\F0027"; }
+.cat-041:before { content: "\F0028"; }
+.cat-042:before { content: "\F0029"; }
+.cat-043:before { content: "\F002A"; }
+.cat-044:before { content: "\F002B"; }
+.cat-045:before { content: "\F002C"; }
+.cat-046:before { content: "\F002D"; }
+.cat-047:before { content: "\F002E"; }
+.cat-048:before { content: "\F002F"; }
+.cat-049:before { content: "\F0030"; }
+.cat-050:before { content: "\F0031"; }
+.cat-051:before { content: "\F0032"; }
+.cat-052:before { content: "\F0033"; }
+.cat-053:before { content: "\F0034"; }
+.cat-054:before { content: "\F0035"; }
+.cat-055:before { content: "\F0036"; }
+.cat-056:before { content: "\F0037"; }
+.cat-057:before { content: "\F0038"; }
+.cat-058:before { content: "\F0039"; }
+.cat-059:before { content: "\F003A"; }
+.cat-060:before { content: "\F003B"; }
+.cat-061:before { content: "\F003C"; }
+.cat-062:before { content: "\F003D"; }
+.cat-063:before { content: "\F003E"; }
+.cat-064:before { content: "\F003F"; }
+.cat-065:before { content: "\F0040"; }
+.cat-066:before { content: "\F0041"; }
+.cat-067:before { content: "\F0042"; }
+.cat-068:before { content: "\F0043"; }
+.cat-069:before { content: "\F0044"; }
+.cat-070:before { content: "\F0045"; }
+.cat-071:before { content: "\F0046"; }
+.cat-072:before { content: "\F0047"; }
+.cat-073:before { content: "\F0048"; }
+.cat-074:before { content: "\F0049"; }
+.cat-075:before { content: "\F004A"; }
+.cat-076:before { content: "\F004B"; }
+.cat-077:before { content: "\F004C"; }
+.cat-078:before { content: "\F004D"; }
+.cat-079:before { content: "\F004E"; }
+.cat-080:before { content: "\F004F"; }
+.cat-081:before { content: "\F0050"; }
+.cat-082:before { content: "\F0051"; }
+.cat-083:before { content: "\F0052"; }
+.cat-084:before { content: "\F0053"; }
+.cat-085:before { content: "\F0054"; }
+.cat-086:before { content: "\F0055"; }
+.cat-087:before { content: "\F0056"; }
+.cat-088:before { content: "\F0057"; }
+.cat-089:before { content: "\F0058"; }
+.cat-090:before { content: "\F0059"; }
+.cat-091:before { content: "\F005A"; }
+.cat-092:before { content: "\F005B"; }
+.cat-093:before { content: "\F005C"; }
+.cat-094:before { content: "\F005D"; }
+.cat-095:before { content: "\F005E"; }
+.cat-096:before { content: "\F005F"; }
+.cat-097:before { content: "\F0060"; }
+.cat-098:before { content: "\F0061"; }
+.cat-099:before { content: "\F0062"; }
+.cat-100:before { content: "\F0063"; }
+.cat-101:before { content: "\F0064"; }
+.cat-102:before { content: "\F0065"; }
+.cat-103:before { content: "\F0066"; }
+.cat-104:before { content: "\F0067"; }
+.cat-105:before { content: "\F0068"; }
+.cat-106:before { content: "\F0069"; }
+.cat-107:before { content: "\F006A"; }
+.cat-108:before { content: "\F006B"; }
+.cat-109:before { content: "\F006C"; }
+.cat-110:before { content: "\F006D"; }
+.cat-111:before { content: "\F006E"; }
+.cat-112:before { content: "\F006F"; }
+
+.cat-113:before { content: "\F0070"; }
+.cat-114:before { content: "\F0071"; }
+.cat-115:before { content: "\F0072"; }
+.cat-116:before { content: "\F0073"; }
+.cat-117:before { content: "\F0074"; }
+.cat-118:before { content: "\F0075"; }
+.cat-119:before { content: "\F0076"; }
+.cat-120:before { content: "\F0077"; }
+.cat-121:before { content: "\F0078"; }
+.cat-122:before { content: "\F0079"; }
+.cat-123:before { content: "\F007A"; }
+.cat-124:before { content: "\F007B"; }
+.cat-125:before { content: "\F007C"; }
+.cat-126:before { content: "\F007D"; }
+.cat-127:before { content: "\F007E"; }
+.cat-128:before { content: "\F007F"; }
+.cat-129:before { content: "\F0080"; }
+.cat-130:before { content: "\F0081"; }
+.cat-131:before { content: "\F0082"; }
+.cat-132:before { content: "\F0083"; }
+.cat-133:before { content: "\F0084"; }
+.cat-134:before { content: "\F0085"; }
+.cat-135:before { content: "\F0086"; }
+.cat-136:before { content: "\F0087"; }
+.cat-137:before { content: "\F0088"; }
+.cat-138:before { content: "\F0089"; }
+.cat-139:before { content: "\F008A"; }
+.cat-140:before { content: "\F008B"; }
+.cat-141:before { content: "\F008C"; }
+.cat-142:before { content: "\F008D"; }
+.cat-143:before { content: "\F008E"; }
+.cat-144:before { content: "\F008F"; }
+.cat-145:before { content: "\F0090"; }
+.cat-146:before { content: "\F0091"; }
+.cat-147:before { content: "\F0092"; }
+.cat-148:before { content: "\F0093"; }
+.cat-149:before { content: "\F0094"; }
+.cat-150:before { content: "\F0095"; }
+.cat-151:before { content: "\F0096"; }
+.cat-152:before { content: "\F0097"; }
+.cat-153:before { content: "\F0098"; }
+.cat-154:before { content: "\F0099"; }
+.cat-155:before { content: "\F009A"; }
+.cat-156:before { content: "\F009B"; }
+.cat-157:before { content: "\F009C"; }
+.cat-158:before { content: "\F009D"; }
+.cat-159:before { content: "\F009E"; }
+.cat-160:before { content: "\F009F"; }
+.cat-161:before { content: "\F00A0"; }
+.cat-162:before { content: "\F00A1"; }
+.cat-163:before { content: "\F00A2"; }
+.cat-164:before { content: "\F00A3"; }
+.cat-165:before { content: "\F00A4"; }
+.cat-166:before { content: "\F00A5"; }
+.cat-167:before { content: "\F00A6"; }
+.cat-168:before { content: "\F00A7"; }
+.cat-169:before { content: "\F00A8"; }
+.cat-170:before { content: "\F00A9"; }
+.cat-171:before { content: "\F00AA"; }
+.cat-172:before { content: "\F00AB"; }
+.cat-173:before { content: "\F00AC"; }
+.cat-174:before { content: "\F00AD"; }
+.cat-175:before { content: "\F00AE"; }
+.cat-176:before { content: "\F00AF"; }
+.cat-177:before { content: "\F00B0"; }
+.cat-178:before { content: "\F00B1"; }
+.cat-179:before { content: "\F00B2"; }
+.cat-180:before { content: "\F00B3"; }
+.cat-181:before { content: "\F00B4"; }
+.cat-182:before { content: "\F00B5"; }
+.cat-183:before { content: "\F00B6"; }
+.cat-184:before { content: "\F00B7"; }
+.cat-185:before { content: "\F00B8"; }
+.cat-186:before { content: "\F00B9"; }
+.cat-187:before { content: "\F00BA"; }
+.cat-188:before { content: "\F00BB"; }
+.cat-189:before { content: "\F00BC"; }
+.cat-190:before { content: "\F00BD"; }
+.cat-191:before { content: "\F00BE"; }
+.cat-192:before { content: "\F00BF"; }
+.cat-193:before { content: "\F00C0"; }
+.cat-194:before { content: "\F00C1"; }
+.cat-195:before { content: "\F00C2"; }
+.cat-196:before { content: "\F00C3"; }
+.cat-197:before { content: "\F00C4"; }
+.cat-198:before { content: "\F00C5"; }
+.cat-199:before { content: "\F00C6"; }
+.cat-200:before { content: "\F00C7"; }
+.cat-201:before { content: "\F00C8"; }
+.cat-202:before { content: "\F00C9"; }
+.cat-203:before { content: "\F00CA"; }
+.cat-204:before { content: "\F00CB"; }
+.cat-205:before { content: "\F00CC"; }
+.cat-206:before { content: "\F00CD"; }
+.cat-207:before { content: "\F00CE"; }
+.cat-208:before { content: "\F00CF"; }
+.cat-209:before { content: "\F00D0"; }
+.cat-210:before { content: "\F00D1"; }
+.cat-211:before { content: "\F00D2"; }
+.cat-212:before { content: "\F00D3"; }
+.cat-213:before { content: "\F00D4"; }
+.cat-214:before { content: "\F00D5"; }
+.cat-215:before { content: "\F00D6"; }
+.cat-216:before { content: "\F00D7"; }
+.cat-217:before { content: "\F00D8"; }
+.cat-218:before { content: "\F00D9"; }
+.cat-219:before { content: "\F00DA"; }
+.cat-220:before { content: "\F00DB"; }
+.cat-221:before { content: "\F00DC"; }
+.cat-222:before { content: "\F00DD"; }
+.cat-223:before { content: "\F00DE"; }
+.cat-224:before { content: "\F00DF"; }
+.cat-225:before { content: "\F00E0"; }
+.cat-226:before { content: "\F00E1"; }
+.cat-227:before { content: "\F00E2"; }
+.cat-228:before { content: "\F00E3"; }
+.cat-229:before { content: "\F00E4"; }
+.cat-230:before { content: "\F00E5"; }
+.cat-231:before { content: "\F00E6"; }
+.cat-232:before { content: "\F00E7"; }
+.cat-233:before { content: "\F00E8"; }
+.cat-234:before { content: "\F00E9"; }
+.cat-235:before { content: "\F00EA"; }
+.cat-236:before { content: "\F00EB"; }
+.cat-237:before { content: "\F00EC"; }
+.cat-238:before { content: "\F00ED"; }
+.cat-239:before { content: "\F00EE"; }
+.cat-240:before { content: "\F00EF"; }
+.cat-241:before { content: "\F00F0"; }
+.cat-242:before { content: "\F00F1"; }
+.cat-243:before { content: "\F00F2"; }
+.cat-244:before { content: "\F00F3"; }
+.cat-245:before { content: "\F00F4"; }
+.cat-246:before { content: "\F00F5"; }
+.cat-247:before { content: "\F00F6"; }
+.cat-248:before { content: "\F00F7"; }
+.cat-249:before { content: "\F00F8"; }
+.cat-250:before { content: "\F00F9"; }
+.cat-251:before { content: "\F00FA"; }
+.cat-252:before { content: "\F00FB"; }
+.cat-253:before { content: "\F00FC"; }
+.cat-254:before { content: "\F00FD"; }
+.cat-255:before { content: "\F00FE"; }
+.cat-256:before { content: "\F00FF"; }
+.cat-257:before { content: "\F0100"; }
+.cat-258:before { content: "\F0101"; }
+
+/* ============================================================
+   13 個鮮豔配色
+   ============================================================ */
+.cat-color01 { color: rgba(220, 20, 60, 1.0); }
+.cat-color02 { color: rgba(255, 140, 0, 1.0); }
+.cat-color03 { color: rgba(255, 215, 0, 1.0); }
+.cat-color04 { color: rgba(46, 204, 64, 1.0); }
+.cat-color05 { color: rgba(0, 153, 153, 1.0); }
+.cat-color06 { color: rgba(0, 102, 204, 1.0); }
+.cat-color07 { color: rgba(102, 51, 153, 1.0); }
+.cat-color08 { color: rgba(255, 0, 127, 1.0); }
+.cat-color09 { color: rgba(191, 64, 191, 1.0); }
+.cat-color10 { color: rgba(255, 102, 0, 1.0); }
+.cat-color11 { color: rgba(0, 204, 153, 1.0); }
+.cat-color12 { color: rgba(153, 0, 51, 1.0); }
+.cat-color13 { color: rgba(51, 51, 153, 1.0); }
