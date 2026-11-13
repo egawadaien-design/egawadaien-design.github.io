@@ -103,8 +103,11 @@
 	}
 	.lede { margin-top: 22px; max-width: 24em; color: #46543a; }
 
+	/* 左右兩欄都要能被壓縮，否則右邊那句長題詞會把左邊擠成一條細柱 */
+	.hero-text, .sig { min-width: 0; }
+
 	/* 簽名：字型字形本身就是手寫感，不再疊裝飾，只給它一點傾斜與紙上的留白 */
-	.sig { text-align: center; justify-self: start; }
+	.sig { text-align: center; justify-self: stretch; }
 	.sig-mark {
 		font-size: clamp(60px, 17vw, 96px);
 		color: var(--leaf-deep);
@@ -112,8 +115,9 @@
 		opacity: .95;
 	}
 	.sig-label {
-		display: block; margin-top: 6px;
-		font-size: 11px; letter-spacing: .32em; color: var(--ink-soft);
+		display: block; margin: 8px auto 0; max-width: 26em;
+		font-size: 11px; line-height: 1.8; letter-spacing: .32em;
+		color: var(--ink-soft); overflow-wrap: anywhere;
 	}
 
 	/* ===== 作品：只有連結，一條一條排，不寫介紹 ===== */
@@ -147,15 +151,21 @@
 	.foot-text { font-size: 12px; letter-spacing: .06em; color: var(--ink-soft); }
 	.foot-text a { color: var(--leaf-deep); }
 
-	/* ===== 768px 以上：左右分欄、專長改成三欄對齊 ===== */
+	/* ===== 768px 以上：左右等寬兩欄，誰也不吃掉誰；專長改成兩欄對齊 ===== */
 	@media (min-width: 768px) {
 		.wrap { padding: 0 40px; }
 		.hero { padding: 56px 0 66px; }
-		.hero-inner { grid-template-columns: 1fr auto; align-items: center; gap: 46px; }
-		.sig { justify-self: end; }
-		.sig-mark { font-size: 104px; }
+		.hero-inner { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 44px; }
+		.sig { justify-self: stretch; }
+		.sig-mark { font-size: 96px; }
+		.sig-label { font-size: 12px; letter-spacing: .1em; max-width: 24em; }
 		.link-row { padding: 16px 6px; }
 		.role { grid-template-columns: 96px 1fr; align-items: baseline; gap: 18px; }
+	}
+
+	/* ===== 1120px 以上：文字那一側多分一點，字不會被擠成細柱 ===== */
+	@media (min-width: 1120px) {
+		.hero-inner { grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); gap: 56px; }
 	}
 
 	@media (prefers-reduced-motion: reduce) {

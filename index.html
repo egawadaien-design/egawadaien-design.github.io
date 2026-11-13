@@ -103,8 +103,11 @@
 	}
 	.lede { margin-top: 22px; max-width: 24em; color: #46543a; }
 
+	/* Both halves must be able to shrink, otherwise the epigraph on the right pushes the text flat */
+	.hero-text, .sig { min-width: 0; }
+
 	/* Signature: the glyph already feels hand-written, so it only gets a tilt and some air */
-	.sig { text-align: center; justify-self: start; }
+	.sig { text-align: center; justify-self: stretch; }
 	.sig-mark {
 		font-size: clamp(60px, 17vw, 96px);
 		color: var(--leaf-deep);
@@ -112,8 +115,9 @@
 		opacity: .95;
 	}
 	.sig-label {
-		display: block; margin-top: 6px;
-		font-size: 11px; letter-spacing: .32em; color: var(--ink-soft);
+		display: block; margin: 8px auto 0; max-width: 26em;
+		font-size: 11px; line-height: 1.8; letter-spacing: .32em;
+		color: var(--ink-soft); overflow-wrap: anywhere;
 	}
 
 	/* ===== Works: links only, one to a row, no descriptions ===== */
@@ -147,15 +151,21 @@
 	.foot-text { font-size: 12px; letter-spacing: .06em; color: var(--ink-soft); }
 	.foot-text a { color: var(--leaf-deep); }
 
-	/* ===== From 768px up: split the hero, align the role rows ===== */
+	/* ===== From 768px up: two equal halves, so neither side eats the other ===== */
 	@media (min-width: 768px) {
 		.wrap { padding: 0 40px; }
 		.hero { padding: 56px 0 66px; }
-		.hero-inner { grid-template-columns: 1fr auto; align-items: center; gap: 46px; }
-		.sig { justify-self: end; }
-		.sig-mark { font-size: 104px; }
+		.hero-inner { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 44px; }
+		.sig { justify-self: stretch; }
+		.sig-mark { font-size: 96px; }
+		.sig-label { font-size: 12px; letter-spacing: .1em; max-width: 24em; }
 		.link-row { padding: 16px 6px; }
 		.role { grid-template-columns: 118px 1fr; align-items: baseline; gap: 18px; }
+	}
+
+	/* ===== From 1120px up: give the text a little more room than the logo ===== */
+	@media (min-width: 1120px) {
+		.hero-inner { grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); gap: 56px; }
 	}
 
 	@media (prefers-reduced-motion: reduce) {
