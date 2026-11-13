@@ -2,18 +2,6 @@
 	@author: [DaiEn]
 	@Date: 2026-11-14
 	@Correction: 3
-	本次修正：三頁合併成單一 index.html 之後，語言只剩「同一份版型換字」，
-	          所以換語言時的字型與標題字距改由 html:lang(en) 這組規則負責，
-	          不必再靠兩個檔案各自覆寫 :root，也不用換版型。
-	上次修正：把 index-zh / index-en 兩頁之間重複的版式也搬進來（頂部列、hero 文字、簽名、
-	          作品清單、專長清單、768 斷點細節），兩頁的 <style> 只剩自己的字型家族與 hero 留白。
-	          刻意沒有搬 section 的 padding／分隔線：首頁的 section.hero 若吃到那條 border-top，
-	          頁首下面會多出一條線。
-	上次修正：把三個語言首頁（index / index-zh / index-en）共用的樣式抽成這一支：
-	          圖標字型、色票、reset、body 基礎、.wrap、連結、頂部名字、頁尾、粒子網路圖層。
-	          各頁自己的版式（hero、區塊、清單、斷點細節）留在各頁的 <style> 裡——
-	          同一個 .hero 在首頁是「兩個語言圖示並排」、在 zh/en 是「左文右簽名兩欄」，
-	          硬併成一支會互相蓋掉，所以只抽真正共用的部分。
 */
 
 /* ===== 自製圖標字型：簽名用 cat-153，字碼 \F0098（對應 webfonts/font.css）
