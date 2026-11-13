@@ -1,0 +1,325 @@
+/*
+	@author: [DaiEn]
+	@Date: 2026-11-14
+	@Correction: 3
+	本次修正：三頁合併成單一 index.html 之後，語言只剩「同一份版型換字」，
+	          所以換語言時的字型與標題字距改由 html:lang(en) 這組規則負責，
+	          不必再靠兩個檔案各自覆寫 :root，也不用換版型。
+	上次修正：把 index-zh / index-en 兩頁之間重複的版式也搬進來（頂部列、hero 文字、簽名、
+	          作品清單、專長清單、768 斷點細節），兩頁的 <style> 只剩自己的字型家族與 hero 留白。
+	          刻意沒有搬 section 的 padding／分隔線：首頁的 section.hero 若吃到那條 border-top，
+	          頁首下面會多出一條線。
+	上次修正：把三個語言首頁（index / index-zh / index-en）共用的樣式抽成這一支：
+	          圖標字型、色票、reset、body 基礎、.wrap、連結、頂部名字、頁尾、粒子網路圖層。
+	          各頁自己的版式（hero、區塊、清單、斷點細節）留在各頁的 <style> 裡——
+	          同一個 .hero 在首頁是「兩個語言圖示並排」、在 zh/en 是「左文右簽名兩欄」，
+	          硬併成一支會互相蓋掉，所以只抽真正共用的部分。
+*/
+
+/* ===== 自製圖標字型：簽名用 cat-153，字碼 \F0098（對應 webfonts/font.css）
+   三個頁面用到的字碼全部列在這裡；沒用到的多寫幾行不會有副作用，只是多幾條規則 ===== */
+@font-face {
+	font-family: 'CatEmoji';
+	font-style: normal;
+	font-display: swap;
+	src: url('https://egawadaien-design.github.io/eggshell-cat-apng-tool/webfonts/EggshellCat.woff') format('woff'),
+		url('https://egawadaien-design.github.io/eggshell-cat-apng-tool/webfonts/EggshellCat.ttf') format('truetype');
+}
+.cat {
+	font-family: 'CatEmoji';
+	font-style: normal;
+	font-weight: 300;
+	line-height: 1;
+	display: inline-block;
+	-webkit-font-smoothing: antialiased;
+}
+.cat-005:before { content: "\F0004"; }
+.cat-013:before { content: "\F000C"; }
+.cat-014:before { content: "\F000D"; }
+.cat-015:before { content: "\F000E"; }
+.cat-078:before { content: "\F004D"; }
+.cat-079:before { content: "\F004E"; }
+.cat-097:before { content: "\F0060"; }
+.cat-111:before { content: "\F006E"; }
+.cat-112:before { content: "\F006F"; }
+.cat-153:before { content: "\F0098"; }
+.cat-257:before { content: "\F0100"; }
+.cat-258:before { content: "\F0101"; }
+.cat-213:before { content: "\F00D4"; }
+.cat-214:before { content: "\F00D5"; }
+.cat-215:before { content: "\F00D6"; }
+.cat-1x { font-size: 1em; }
+.cat-2x { font-size: 2em; }
+.cat-3x { font-size: 3em; }
+.cat-4x { font-size: 4em; }
+.cat-5x { font-size: 5em; }
+
+/* ===== 色票：蘋果綠為底，配橄欖墨字與暖奶油
+   字型家族留在各頁覆寫：中文頁用宋體＋正黑、英文頁用 Iowan／Segoe UI ===== */
+:root {
+	--paper: #eef7dd;        /* 蘋果綠底 */
+	--paper-deep: #e3f1c9;   /* 區塊之間的淺帶 */
+	--cream: #fffdf3;        /* 暖奶油，只給需要呼吸的地方 */
+	--ink: #2f3e25;          /* 主字：深橄欖 */
+	--ink-soft: #5f6f4d;     /* 副字 */
+	--leaf: #7fac30;         /* 蘋果綠本體 */
+	--leaf-deep: #587d22;    /* 連結與簽名 */
+	--line: #cfe3ae;
+	--serif: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+	--sans: "Segoe UI", -apple-system, "Helvetica Neue", sans-serif;
+}
+
+/* ===== 英文模式：同一份版型只換字
+   中文字型擺在 index.html 的 :root（預設語言），切成英文時由這兩條覆寫。
+   html:lang(en) 的權重比 :root 高，所以不必把規則塞回頁面裡。 ===== */
+html:lang(en) {
+	--serif: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+	--sans: "Segoe UI", -apple-system, "Helvetica Neue", sans-serif;
+}
+/* 英文標題用襯線體，字距要比中文鬆一點點才不會糊在一起 */
+html:lang(en) .hero-text h1 { letter-spacing: .01em; }
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+img,
+svg {
+	max-width: 100%;
+	display: block;
+}
+
+/* body 只給三頁共通的部分；首頁那段「頁尾壓在視窗最底」的 flex 留在首頁自己的 style */
+body {
+	background: var(--paper);
+	color: var(--ink);
+	font-family: var(--sans);
+	font-size: 16px;
+	line-height: 1.85;
+	-webkit-font-smoothing: antialiased;
+	overflow-x: hidden;
+}
+
+.wrap {
+	width: 100%;
+	max-width: 860px;
+	margin: 0 auto;
+	padding: 0 22px;
+}
+
+a {
+	color: var(--leaf-deep);
+	text-decoration: none;
+}
+a:focus-visible {
+	outline: 2px solid var(--leaf);
+	outline-offset: 3px;
+	border-radius: 3px;
+}
+
+/* ===== 頂部：只有名字（首頁置中、zh/en 靠左並排語言切換，排列方式由各頁決定） ===== */
+.top { padding: 26px 0 0; }
+.top-name {
+	font-family: var(--serif);
+	font-size: 15px;
+	letter-spacing: .06em;
+	color: var(--ink-soft);
+}
+.top-name .dot { color: var(--leaf); }
+
+/* ===== 頁尾：底色與分隔線共通；.foot 只定「橫向排列＋間距」，
+   首頁靠中、zh/en 左右分開，那句 justify-content 留在各頁 ===== */
+footer {
+	padding: 34px 0 44px;
+	border-top: 1px solid var(--line);
+	background: var(--paper-deep);
+}
+.foot {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 14px;
+}
+.foot-sign {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+.foot-mark {
+	font-size: 30px;
+	color: var(--leaf);
+	transform: rotate(-6deg);
+}
+.foot-text {
+	font-size: 12px;
+	letter-spacing: .06em;
+	color: var(--ink-soft);
+}
+.foot-text a { color: var(--leaf-deep); }
+
+/* ===== 粒子網路背景：鋪滿視窗、墊在內容後面，不吃滑鼠事件（畫布由 index.js 負責畫） ===== */
+#netCanvas {
+	position: fixed;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 0;
+	pointer-events: none;
+}
+/* 內容要浮到網路上面：沒設 position 的區塊會被畫布蓋在後面 */
+.top,
+main,
+footer {
+	position: relative;
+	z-index: 1;
+}
+
+/* ===== 內頁（index-zh / index-en）共用的版式 =====
+   這兩頁是同一套版型、只換語言，所以重複的那一大段搬到這裡：
+   頂部列、hero 的文字與簽名、作品清單、專長清單，以及 768 以上的欄寬細節。
+   留在各頁的只剩：字型家族、hero 的上下留白、hero-inner 的欄數（那是頁面的氣質）。 ===== */
+
+/* 頂部：名字在左、語言切換在右 */
+.top-inner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+}
+.lang {
+	font-size: 13px;
+	letter-spacing: .1em;
+	color: var(--leaf-deep);
+}
+
+/* Hero 文字：標題、角色行、引言 */
+.hero-text h1 {
+	font-family: var(--serif);
+	font-weight: 400;
+	font-size: clamp(38px, 11vw, 64px);
+	line-height: 1.18;
+	letter-spacing: .02em;
+}
+.roles {
+	margin-top: 12px;
+	font-size: 15px;
+	letter-spacing: .14em;
+	color: var(--leaf-deep);
+}
+.lede {
+	margin-top: 22px;
+	max-width: 24em;
+	color: #46543a;
+}
+/* 左右兩欄都要能被壓縮，否則右邊那句長題詞會把左邊擠成一條細柱 */
+.hero-text,
+.sig {
+	min-width: 0;
+}
+
+/* 簽名：字型字形本身就是手寫感，只給它一點傾斜與紙上的留白 */
+.sig {
+	text-align: center;
+	justify-self: stretch;
+}
+.sig-mark {
+	font-size: clamp(60px, 17vw, 96px);
+	color: var(--leaf-deep);
+	transform: rotate(-6deg);
+	opacity: .95;
+}
+.sig-label {
+	display: block;
+	margin: 8px auto 0;
+	max-width: 26em;
+	font-size: 11px;
+	line-height: 1.8;
+	letter-spacing: .32em;
+	color: var(--ink-soft);
+	overflow-wrap: anywhere;
+}
+
+/* 作品：只有連結，一條一條排，不寫介紹 */
+h2 {
+	font-family: var(--serif);
+	font-weight: 400;
+	font-size: 19px;
+	letter-spacing: .1em;
+	color: var(--ink);
+	margin-bottom: 6px;
+}
+.links { display: grid; }
+.link-row {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 15px 0;
+	border-bottom: 1px solid var(--line);
+	min-height: 48px;
+}
+.link-row:hover { background: var(--cream); }
+.link-name {
+	font-size: 15px;
+	color: var(--ink);
+}
+.link-url {
+	font-size: 12px;
+	letter-spacing: .03em;
+	color: var(--ink-soft);
+	text-align: right;
+	white-space: nowrap;
+}
+
+/* 專長：左標籤右說明 */
+.roles-list {
+	display: grid;
+	gap: 0;
+	margin-top: 6px;
+}
+.role {
+	display: grid;
+	gap: 2px;
+	padding: 16px 0;
+	border-bottom: 1px solid var(--line);
+}
+.role-label {
+	font-family: var(--serif);
+	font-size: 17px;
+	color: var(--leaf-deep);
+	white-space: nowrap;
+}
+.role-note {
+	font-size: 14px;
+	color: var(--ink-soft);
+	min-width: 0;
+}
+
+@media (min-width: 768px) {
+	.wrap { padding: 0 40px; }
+
+	.sig { justify-self: stretch; }
+	.sig-mark { font-size: 96px; }
+	.sig-label {
+		font-size: 12px;
+		letter-spacing: .1em;
+		max-width: 24em;
+	}
+	.link-row { padding: 16px 6px; }
+	/* 標籤欄改成依內容決定寬度：寫死像素的話「🐱 程序員」會超出欄位、被折成兩行 */
+	.role {
+		grid-template-columns: max-content minmax(0, 1fr);
+		align-items: baseline;
+		gap: 18px 28px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sig-mark,
+	.foot-mark {
+		transform: none;
+	}
+}

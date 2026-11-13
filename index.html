@@ -1,380 +1,239 @@
 <!--
 	@author: [DaiEn]
 	@Date: 2026-11-14
-	@Correction: 9
-	本次修正：粒子網路的點與線改成七色以上鮮艷漸變——每顆粒子的顏色從 9 色彩虹盤裡「隨機」抽
+	@Correction: 15
+	本次修正：三頁合成一頁——index-zh / index-en 的內容併進這裡，語言交給同資料夾的 i18n.js
+	          （預設中文，右上角字形鈕與頁尾連結切換英文，選擇記在 localStorage）。
+	          原本首頁那兩個語言入口整段移除，進站直接看到中文的自我介紹。
+	上次修正：兩個語言圖示改成「水平＋垂直都置中」——main 從單純吃剩餘高度（flex:1）再變成
+	          flex 容器（align-items／justify-content 都 center），hero 補 width:100% 免得縮成內容寬，
+	          上下留白改成對稱（50/50、768 以上 70/70），不然原本 46 對 58 的差值會讓整組偏低
+	上次修正：共用樣式抽成同資料夾的 index.css（圖標字型、色票、reset、body、.wrap、連結、頂部名字、頁尾、網路圖層），
+	          這頁的 <style> 只剩自己的版式；三頁外觀完全不變
+	上次修正：把 inline script 抽成同資料夾的 index.js（這頁只留 <script src="index.js"></script>），
+	          讓 index / index-zh / index-en 三個語言頁共用同一支背景網路；程式與外觀完全不變
+	上次修正：新增 OPACITY 選項（0~255，方向跟 CSS 的 alpha 相反：0＝最清楚、255＝整片消失），
+	          同一個倍率套在點、線段、三角形面紗上，整片網路一起濃淡——
+	          只淡點或只淡線會出現「線還在、點不見」的鬼畫面，所以三者共用一個倍率
+	上次修正：顏色玩法多了「一次顯示幾色」的隱藏選項（在 JS 最上面的 COLOR_MODE 數字，畫面上不放選單）：
+	          0＝多色同時（原本的 9 色各據一方）、1＝四色一組、2＝三色一組、3＝雙色一組、4＝單色；
+	          1～4 每組先停一段時間，再用幾秒沿最短色相路徑慢慢過渡到「另一組隨機挑的顏色」，無限循環
+	上次修正：粒子網路的點與線改成七色以上鮮艷漸變——每顆粒子的顏色從 9 色彩虹盤裡「隨機」抽
 	          （沿用原本的固定種子，所以每次重整都是同一片花花網路，但顏色順序是亂的、不是照位置排），
 	          線段兩端各取自己那顆粒子的顏色拉線性漸層，跨色區時自然過渡；
-	          三角形面紗維持原本的白，避免彩色疊太多變成一塊髒斑
+	          三角形面紗改成跟頂點借色相、濃度壓很低，避免彩色疊太多變成一塊髒斑
 	上次修正：背景改成自己寫的「粒子網路」（節點＋近距離連線＋三點互連的淡色三角形），
-	          配色照這頁的蘋果綠紙底走（深橄欖綠的點、淺綠的線、半透明的白面紗三角形），
-	          不鋪黑底、也不引入 tsParticles；原本那顆 3D 正二十面體骨架整段移除（備份留在工作區）
+	          配色照這頁的蘋果綠紙底走，不鋪黑底、也不引入 tsParticles
 	上次修正：頁尾強制置底——body 改成垂直 flex（min-height: 100vh／100dvh），main 用 flex:1 吃掉中間空白、
 	          footer 用 flex:0 0 auto 固定高度，內容不滿一屏時頁尾也貼在視窗最下面；不用 position:fixed，
 	          免得蓋到內容、內容變長時也不必另外留 padding
 -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DaiEn — Writer・Programmer</title>
-<meta name="description" content="DaiEn">
-<link rel="alternate" hreflang="zh-Hant" href="index-zh.html">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23a7cf52'/%3E%3Cpath d='M32 15c8 0 14 7 14 16 0 10-6 18-14 18S18 41 18 31c0-9 6-16 14-16z' fill='%23f7fbef'/%3E%3Ccircle cx='26' cy='32' r='2.6' fill='%232f3e25'/%3E%3Ccircle cx='38' cy='32' r='2.6' fill='%232f3e25'/%3E%3Cpath d='M32 37l-3 4h6z' fill='%237fac30'/%3E%3C/svg%3E">
-<style>
-	/* ===== Self-made icon font: the signature is cat-153, code \F0098 (same as webfonts/font.css) ===== */
-	@font-face {
-		font-family: 'CatEmoji';
-		font-style: normal;
-		font-display: swap;
-		src: url('https://egawadaien-design.github.io/eggshell-cat-apng-tool/webfonts/EggshellCat.woff') format('woff'),
-			url('https://egawadaien-design.github.io/eggshell-cat-apng-tool/webfonts/EggshellCat.ttf') format('truetype');
-	}
-	.cat {
-		font-family: 'CatEmoji';
-		font-style: normal;
-		font-weight: 300;
-		line-height: 1;
-		display: inline-block;
-		-webkit-font-smoothing: antialiased;
-	}
-	/* 只留這頁用到的五個字：013 / 015（兩個語言入口）、111（抬頭）、112 / 153（頁尾） */
-	.cat-013:before { content: "\F000C"; }
-	.cat-015:before { content: "\F000E"; }
-	.cat-111:before { content: "\F006E"; }
-	.cat-112:before { content: "\F006F"; }
-	.cat-153:before { content: "\F0098"; }
-	.cat-213:before { content: "\F00D4"; }
-	.cat-214:before { content: "\F00D5"; }
-	.cat-215:before { content: "\F00D6"; }
-	.cat-2x { font-size: 2em; }
+<!doctype html>
+<html lang="zh-Hant">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>蛋殼喵 DaiEn — 作家・程序員・企業負責人</title>
+		<meta name="description" content="蛋殼喵 DaiEn" />
+		<link
+			rel="icon"
+			href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23a7cf52'/%3E%3Cpath d='M32 15c8 0 14 7 14 16 0 10-6 18-14 18S18 41 18 31c0-9 6-16 14-16z' fill='%23f7fbef'/%3E%3Ccircle cx='26' cy='32' r='2.6' fill='%232f3e25'/%3E%3Ccircle cx='38' cy='32' r='2.6' fill='%232f3e25'/%3E%3Cpath d='M32 37l-3 4h6z' fill='%237fac30'/%3E%3C/svg%3E"
+		/>
+		<link rel="stylesheet" href="index.css" />
+		<style>
+			/* ===== 這一頁自己的版式；圖標字型、色票、reset、頁尾、網路圖層都在 index.css ===== */
 
-	/* ===== Palette: apple green ground, olive ink ===== */
-	:root {
-		--paper: #eef7dd;        /* apple green ground */
-		--paper-deep: #e3f1c9;   /* the shallow band between blocks */
-		--ink: #2f3e25;          /* main text: deep olive */
-		--ink-soft: #5f6f4d;     /* secondary text */
-		--leaf: #7fac30;         /* the apple green itself */
-		--leaf-deep: #587d22;    /* links and signature */
-		--line: #cfe3ae;
-		--serif: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
-		--sans: "Segoe UI", -apple-system, "Helvetica Neue", sans-serif;
-	}
-
-	* { box-sizing: border-box; margin: 0; padding: 0; }
-
-	/* ===== 版面：內容不滿一屏時，頁尾也要壓在視窗最底下 =====
-	   做法是把 body 變成垂直 flex：main 吃掉剩下的高度（flex:1），footer 就自然落到最底。
-	   比 position:fixed 乾淨——不會蓋到內容，內容變長（例如 index-zh）時也照樣正常往下排。 */
-	html, body { height: 100%; }
-	body {
-		background: var(--paper);
-		color: var(--ink);
-		font-family: var(--sans);
-		font-size: 16px;
-		line-height: 1.85;
-		-webkit-font-smoothing: antialiased;
-		overflow-x: hidden;
-		display: flex;
-		flex-direction: column;
-		/* vh 是舊瀏覽器的退路；dvh 才是手機位址列收合後真正可見的高度 */
-		min-height: 100vh;
-		min-height: 100dvh;
-	}
-	main { flex: 1 0 auto; }        /* 撐滿中間那段空白 */
-	footer { flex: 0 0 auto; }      /* 頁尾不隨內容伸縮，高度就是它自己的 */
-
-	.wrap { width: 100%; max-width: 860px; margin: 0 auto; padding: 0 22px; }
-
-	a { color: var(--leaf-deep); text-decoration: none; }
-	a:focus-visible { outline: 2px solid var(--leaf); outline-offset: 3px; border-radius: 3px; }
-
-	/* ===== Top: name only, centred like the hero ===== */
-	.top { padding: 26px 0 0; text-align: center; }
-	.top-name { font-family: var(--serif); font-size: 15px; letter-spacing: .06em; color: var(--ink-soft); }
-	.top-name .dot { color: var(--leaf); }
-
-	/* ===== Hero: the two language glyphs, centred ===== */
-	.hero { padding: 46px 0 58px; }
-	.hero-inner {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		justify-content: center;
-		gap: clamp(32px, 10vw, 120px);
-	}
-	/* 圖示放大後要壓住 a 的行高，不然外框會多出一截空白 */
-	.hero a { display: block; line-height: 0; }
-	.hero .cat {
-		font-size: clamp(72px, 14vw, 132px);
-		color: var(--leaf-deep);
-		line-height: 1;
-	}
-
-	/* ===== Footer ===== */
-	footer { padding: 34px 0 44px; border-top: 1px solid var(--line); background: var(--paper-deep); text-align: center; }
-	.foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px; }
-	.foot-sign { display: flex; align-items: center; gap: 12px; }
-	.foot-mark { font-size: 30px; color: var(--leaf); transform: rotate(-6deg); }
-	.foot-text { font-size: 12px; letter-spacing: .06em; color: var(--ink-soft); }
-
-	@media (min-width: 768px) {
-		.wrap { padding: 0 40px; }
-		.hero { padding: 64px 0 76px; }
-	}
-
-	/* ===== 粒子網路背景：鋪滿視窗、墊在所有內容後面，不吃滑鼠事件 ===== */
-	#netCanvas {
-		position: fixed;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-		z-index: 0;
-		pointer-events: none;
-	}
-	/* 內容要浮到網路上面（沒有 position 的區塊會被蓋在後面） */
-	.top, main, footer { position: relative; z-index: 1; }
-
-	@media (prefers-reduced-motion: reduce) {
-		.foot-mark { transform: none; }
-	}
-</style>
-</head>
-<body>
-
-<canvas id="netCanvas" aria-hidden="true"></canvas>
-
-<div class="top">
-	<div class="wrap">
-		<p class="top-name"><i class="cat cat-111" aria-hidden="true"></i>&nbsp;DaiEn <span class="dot">·</span> Eggshell Cat</p>
-	</div>
-</div>
-
-<main>
-	<!-- ===== 兩個語言入口：圖示置中 ===== -->
-	<section class="hero">
-		<div class="wrap hero-inner">
-			<a href="index-en.html">
-				<i class="cat cat-215" aria-hidden="true"></i>
-			</a>
-			<a href="index-zh.html">
-				<i class="cat cat-213" aria-hidden="true"></i>
-			</a>
-		</div>
-	</section>
-</main>
-
-<footer>
-	<div class="wrap foot">
-		<div class="foot-sign">
-			<i class="cat cat-112 cat-2x" aria-hidden="true"></i>
-			<i class="cat cat-153 foot-mark" aria-hidden="true"></i>
-			<p class="foot-text">&copy; 2026 DaiEn · EggshellCat</p>
-		</div>
-	</div>
-</footer>
-
-<script>
-/*
- * 粒子網路背景（自製，沒有用 tsParticles 或任何外部函式庫）
- *
- * 長什麼樣：一顆顆小點慢慢漂，彼此靠近就牽一條線，三顆互相連上時中間透出一塊淡淡的白，
- *   像星座、也像一張薄薄的結構網。整片鋪滿視窗、墊在內容後面、不吃滑鼠事件。
- *
- * 為什麼不是黑底：這頁的紙底是蘋果綠（--paper #eef7dd），黑底會把整頁的氣質毀掉；
- *   但點和線本來是深橄欖綠＋淺綠，整片看下去只有一個顏色。現在改成點與線都吃「彩虹盤」：
- *   洋紅、粉、橙、金、萊姆、青綠、天藍、藍、紫共 9 色，每顆粒子隨機抽一個（順序是亂的、
- *   不是照位置排），線段則在兩端各取自己那顆粒子的顏色拉漸層，所以一顆點跨到隔壁點時
- *   中間會自然過渡。三角形面紗維持白色——彩色疊在白面上會變成一塊髒灰，反而醜。
- *
- * 粒子怎麼動：每顆走一條利薩如軌跡（x 用 sin、y 用 cos），兩個軸的頻率與相位都由固定種子決定，
- *   所以每次重新整理都是同一片網路（不會每次載入都換一張臉）。
- *   這裡不需要「接格」，因此頻率不必取整數，只要動作慢、看起來像在呼吸就好。
- *
- * 每格只做三件事：算位置 → 算距離（近的連線、三點連成三角形，先填面再畫線）→ 畫點。
- */
-(function () {
-	var cv = document.getElementById('netCanvas');
-	if (!cv || !cv.getContext) return;
-	var ctx = cv.getContext('2d');
-	var dpr = Math.min(2, window.devicePixelRatio || 1);
-	var TAU = Math.PI * 2;
-
-	// 九色鮮艷彩虹盤（色相）：洋紅 305 → 粉 352 → 橙 14 → 金 42 → 萊姆 96 →
-	//   青綠 172 → 天藍 196 → 藍 228 → 紫 268。每顆粒子從這裡「隨機」抽一個，
-	//   所以顏色在畫面上是跳著的，不是左到右排一排
-	var PALETTE = [305, 352, 14, 42, 96, 172, 196, 228, 268];
-
-	var w = 0, h = 0, link = 0;
-	var P = [];                                     // 每顆粒子的固定資料（座標都用 0~1 正規化）
-	var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-	// 固定種子的亂數（LCG）：同一顆種子永遠長出同一片網路
-	function seedRnd(seed) {
-		var s = seed % 2147483647;
-		if (s <= 0) s += 2147483646;
-		return function () {
-			s = (s * 16807) % 2147483647;
-			return (s - 1) / 2147483646;
-		};
-	}
-
-	// 建立粒子：數量跟著畫面面積走，小螢幕不擠、大螢幕不稀
-	function build() {
-		var count = Math.max(40, Math.min(110, Math.round(w * h / 16000)));
-		P.length = 0;
-		for (var i = 0; i < count; i++) {
-			var g = seedRnd(i * 7919 + 17);          // 每顆自己的種子：改數量時只會多／少尾巴那幾顆
-			P.push({
-				nx: 0.06 + 0.88 * g(),               // 軌跡中心（0~1）
-				ny: 0.08 + 0.84 * g(),
-				ax: 0.03 + 0.10 * g(),               // 左右擺幅（0~1）
-				ay: 0.03 + 0.10 * g(),               // 上下擺幅
-				fx: 0.010 + 0.030 * g(),             // 每秒繞幾圈（慢，才像呼吸）
-				fy: 0.010 + 0.030 * g(),
-				ox: g(), oy: g(),                    // 相位
-				r: 1.1 + 1.5 * g(),                  // 半徑
-				a: 0.55 + 0.45 * g(),                // 這顆多濃（0.55~1.0；點只有 1~2.6px，太淡就只剩一個灰點）
-				// 【顏色】從彩虹盤隨機抽一個色相，再抖 ±4° 免得同色號的粒子一模一樣；
-				//   用同一顆固定種子，所以重整後顏色位置不會跳，但順序本來就是亂的
-				hue: PALETTE[Math.floor(g() * PALETTE.length)] + (g() * 8 - 4)
-			});
-		}
-		link = Math.min(w, h) * 0.15;                // 連線距離：短邊的 15%
-	}
-
-	function resize() {
-		w = window.innerWidth;
-		h = window.innerHeight;
-		cv.width = Math.round(w * dpr);
-		cv.height = Math.round(h * dpr);
-		ctx.setTransform(dpr, 0, 0, dpr, 0, 0);      // 之後都用 CSS 像素座標作畫
-		build();
-	}
-
-	function draw(t) {
-		ctx.clearRect(0, 0, w, h);                   // 只清畫布，底色是 body 的蘋果綠，不鋪黑
-
-		// 1. 算這一刻所有粒子的位置
-		var px = [], py = [], pr = [], pa = [], ph = [];
-		for (var i = 0; i < P.length; i++) {
-			var p = P[i];
-			px.push((p.nx + p.ax * Math.sin(TAU * (p.fx * t + p.ox))) * w);
-			py.push((p.ny + p.ay * Math.cos(TAU * (p.fy * t + p.oy))) * h);
-			pr.push(p.r);
-			pa.push(p.a);
-			ph.push(p.hue);
-		}
-
-		// 2. 鄰居清單：距離小於 link 的算一組（三角形要找「共同鄰居」，先建表才不會 O(n³)）
-		var nb = [];
-		for (var a = 0; a < px.length; a++) {
-			var set = [];
-			for (var b = 0; b < px.length; b++) {
-				if (a === b) continue;
-				var dx = px[a] - px[b], dy = py[a] - py[b];
-				if (dx * dx + dy * dy <= link * link) set.push(b);
+			/* 中文是預設語言，所以中文字型擺在 :root；
+			   切成英文時由 index.css 的 html:lang(en) 那組覆寫成 Iowan／Segoe UI */
+			:root {
+				--serif: "Songti TC", "Noto Serif TC", "PMingLiU", Georgia, serif;
+				--sans: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", -apple-system, "Segoe UI", sans-serif;
 			}
-			nb.push(set);
-		}
 
-		// 3. 先鋪三角形的面紗：三顆彼此都在 link 內就填一塊半透明的色面
-		//    用白色會把底下的彩色線整片洗成灰白（實測截圖看過），所以改成跟頂點同色系、
-		//    濃度壓到 0.12，看起來像一片彩色霧玻璃而不是白斑
-		var triUsed = 0;
-		for (var i2 = 0; i2 < nb.length; i2++) {
-			var triHue = ph[i2].toFixed(0);
-			var na = nb[i2];
-			for (var x = 0; x < na.length; x++) {
-				var bb = na[x];
-				if (bb <= i2 || triUsed >= 400) continue;          // 每組只畫一次；上限 400 片護住效能
-				var nbb = nb[bb];
-				for (var y = 0; y < na.length; y++) {
-					var cc = na[y];
-					if (cc <= bb || triUsed >= 400) continue;
-					if (nbb.indexOf(cc) < 0) continue;             // 第三點要同時是兩邊的鄰居
-					ctx.fillStyle = 'hsla(' + triHue + ',85%,58%,0.08)';
-					ctx.beginPath();
-					ctx.moveTo(px[i2], py[i2]);
-					ctx.lineTo(px[bb], py[bb]);
-					ctx.lineTo(px[cc], py[cc]);
-					ctx.closePath();
-					ctx.fill();
-					triUsed++;
+			/* ===== Hero：左邊自我介紹，右邊簽名 =====
+			   手機是單欄，但要寫成 minmax(0, 1fr)：只寫 display:grid 的話，自動欄寬會跟著裡面的寬圖示長到
+			   max-content，整欄比視窗還寬，右邊那句引言就被切掉（390 寬才看得出來）。 */
+			.hero { padding: 34px 0 46px; }
+			.hero-inner { display: grid; grid-template-columns: minmax(0, 1fr); gap: 30px; }
+
+			/* ===== 頁尾置底：內容不滿一屏時 footer 貼在視窗最下面，內容長了它自然被推下去
+			   用 body 垂直 flex 而不是 position:fixed，才不會蓋到內容、也不必另外留 padding ===== */
+			body {
+				display: flex;
+				flex-direction: column;
+				min-height: 100vh;
+				min-height: 100dvh;
+			}
+			main { flex: 1 1 auto; }
+			footer { flex: 0 0 auto; }
+
+			/* ===== 區塊分隔線：作品與專長各一條，hero 不畫 ===== */
+			section + section { border-top: 1px solid var(--line); }
+			section { padding: 34px 0 40px; }
+
+			/* ===== 頁尾：簽名在左、連結在右 ===== */
+			.foot { justify-content: space-between; }
+
+			/* ===== 語言鈕：顯示「切過去的那個語言」，所以中文模式看得到 En、英文模式看得到簡 ===== */
+			.lang {
+				background: none;
+				border: 0;
+				padding: 4px 2px;
+				cursor: pointer;
+				line-height: 1;
+				font-size: 13px;
+			}
+			.lang .cat { font-size: 22px; color: var(--leaf-deep); }
+			html:lang(zh-Hant) .lang-zh { display: none; }
+			html:lang(en) .lang-en { display: none; }
+
+			.foot-lang {
+				background: none;
+				border: 0;
+				padding: 0;
+				cursor: pointer;
+				font: inherit;
+				color: var(--leaf-deep);
+			}
+
+			/* ===== 768px 以上：左右等寬兩欄，誰也不吃掉誰 ===== */
+			@media (min-width: 768px) {
+				.hero { padding: 56px 0 66px; }
+				.hero-inner {
+					grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+					align-items: center;
+					gap: 44px;
 				}
 			}
-		}
 
-		// 4. 連線：越近越清楚，剛好碰到 link 時完全消失
-		ctx.lineWidth = 1;
-		for (var a2 = 0; a2 < px.length; a2++) {
-			var na2 = nb[a2];
-			for (var k = 0; k < na2.length; k++) {
-				var b2 = na2[k];
-				if (b2 <= a2) continue;
-				var dx2 = px[a2] - px[b2], dy2 = py[a2] - py[b2];
-				var d = Math.sqrt(dx2 * dx2 + dy2 * dy2);
-				var al = (1 - d / link) * 0.55;                     // 最深 0.55：線也要看得出顏色，不然整片只剩點在跳
-				if (al < 0.01) continue;
-				// 【線段漸變】兩端各用自己那顆粒子的色相，中間就是一段漸層：
-				//   一顆洋紅接一顆青綠的線，會在中間慢慢變過去，整片網路才像「彩虹網」而不是單色網。
-				//   兩端同色號（機率很低）就退回純色，省一個 gradient 物件
-				var ha = ph[a2], hb = ph[b2];
-				if (Math.abs(ha - hb) > 6) {
-					var grd = ctx.createLinearGradient(px[a2], py[a2], px[b2], py[b2]);
-					grd.addColorStop(0, 'hsla(' + ha.toFixed(0) + ',95%,42%,' + al.toFixed(3) + ')');
-					grd.addColorStop(1, 'hsla(' + hb.toFixed(0) + ',95%,42%,' + al.toFixed(3) + ')');
-					ctx.strokeStyle = grd;
-				} else {
-					ctx.strokeStyle = 'hsla(' + ha.toFixed(0) + ',95%,42%,' + al.toFixed(3) + ')';
+			/* ===== 1120px 以上：文字那一側多分一點，字不會被擠成細柱 ===== */
+			@media (min-width: 1120px) {
+				.hero-inner {
+					grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
+					gap: 56px;
 				}
-				ctx.beginPath();
-				ctx.moveTo(px[a2], py[a2]);
-				ctx.lineTo(px[b2], py[b2]);
-				ctx.stroke();
 			}
-		}
+		</style>
+	</head>
+	<body>
+		<canvas id="netCanvas" aria-hidden="true"></canvas>
 
-		// 5. 點：外圈一層很淡的光暈、內圈一顆實心點（淺底上要有「微微發亮」只能靠這兩層）
-		//    兩層都吃這顆抽到的色相：外圈亮一點（55%）、內圈深一點（45%），顏色才不會糊在紙底上
-		for (var n = 0; n < px.length; n++) {
-			var hueN = ph[n].toFixed(0);
-			ctx.fillStyle = 'hsla(' + hueN + ',95%,58%,' + (pa[n] * 0.30).toFixed(3) + ')';
-			ctx.beginPath();
-			ctx.arc(px[n], py[n], pr[n] * 2.6, 0, TAU);
-			ctx.fill();
-			ctx.fillStyle = 'hsla(' + hueN + ',95%,42%,' + pa[n].toFixed(3) + ')';
-			ctx.beginPath();
-			ctx.arc(px[n], py[n], pr[n], 0, TAU);
-			ctx.fill();
-		}
-	}
+		<div class="top">
+			<div class="wrap top-inner">
+				<p class="top-name">
+					<i class="cat cat-111" aria-hidden="true"></i>&nbsp;<span data-i18n="brand">蛋殼喵</span>
+					<span class="dot">・</span> <span data-i18n="brandSub">DaiEn</span>
+				</p>
+				<button class="lang" id="langBtn" type="button" aria-label="切換語言 / Switch language">
+					<i class="cat cat-015 lang-en" aria-hidden="true"></i>
+					<i class="cat cat-013 lang-zh" aria-hidden="true"></i>
+				</button>
+			</div>
+		</div>
 
-	var last = 0, clock = 0;
-	function loop(now) {
-		if (!last) last = now;
-		var dt = Math.min(0.05, (now - last) / 1000);   // 夾住 dt：切回分頁時不會一次跳一大格
-		last = now;
-		clock += dt;
-		draw(clock);
-		requestAnimationFrame(loop);
-	}
+		<main>
+			<!-- ===== 自我介紹 ===== -->
+			<section class="hero">
+				<div class="wrap hero-inner">
+					<div class="hero-text">
+						<h1><i class="cat cat-153 sig-mark" role="img" aria-label="DaiEn"></i></h1>
+						<p class="roles">
+							<span data-i18n="roles1">作家・程序員</span><br /><span data-i18n="roles2"
+								>寫下來的，才開始存在</span
+							>
+						</p>
+						<p class="lede">
+							<i class="cat cat-005" aria-hidden="true"></i>&nbsp;<span data-i18n="lede"
+								>白天寫程式，晚上寫小說。兩件事其實是同一件：把一段看不見的節奏，變成別人也能感受到的東西。</span
+							>
+						</p>
+					</div>
+					<div class="sig">
+						<h1><i class="cat cat-112 cat-5x" role="img" aria-label="DaiEn"></i></h1>
+						<span class="sig-label" data-i18n="sigLabel"
+							>一切过往，一切未来&nbsp;&nbsp;&nbsp;&nbsp;存在之轮，永恒流转</span
+						>
+					</div>
+				</div>
+			</section>
 
-	window.addEventListener('resize', function () {
-		resize();
-		if (reduced) draw(0.8);      // 靜態模式：縮放後補畫一格，不然畫面會是舊尺寸的殘影
-	});
+			<!-- ===== 作品：只留連結 ===== -->
+			<section id="work">
+				<div class="wrap">
+					<h2><span data-i18n="workTitle">作品</span></h2>
+					<div class="links">
+						<a class="link-row" href="#" target="_blank" rel="noopener">
+							<span class="link-name" data-i18n="work1">如果死亡只是起點</span>
+							<span class="link-url"><i class="cat cat-005" aria-hidden="true"></i>&nbsp;</span>
+						</a>
+						<a class="link-row" href="https://apng.top/" target="_blank" rel="noopener">
+							<span class="link-name" data-i18n="work2">蛋壳喵 APNG 工具</span>
+							<span class="link-url"><i class="cat cat-257" aria-hidden="true"></i>&nbsp;apng.top</span>
+						</a>
+						<a
+							class="link-row"
+							href="https://github.com/egawadaien-design/eggshell-cat-apng-tool"
+							target="_blank"
+							rel="noopener"
+						>
+							<span class="link-name" data-i18n="work3">GitHub 託管代碼</span>
+							<span class="link-url"><i class="cat cat-097" aria-hidden="true"></i>&nbsp;github.com</span>
+						</a>
+					</div>
+				</div>
+			</section>
 
-	resize();
-	if (reduced) {
-		draw(0.8);                   // 不喜歡動態的人：固定一個好看的一格
-	} else {
-		requestAnimationFrame(loop);
-	}
-})();
-</script>
+			<!-- ===== 專長 ===== -->
+			<section id="roles">
+				<div class="wrap">
+					<h2><span data-i18n="rolesTitle">我在做的事</span></h2>
+					<div class="roles-list">
+						<div class="role">
+							<span class="role-label"
+								><i class="cat cat-078" aria-hidden="true"></i>&nbsp;<span data-i18n="role1Label"
+									>作家</span
+								></span
+							>
+							<span class="role-note" data-i18n="role1Note"
+								>長篇小說，人物與世界觀設定；喜歡把複雜的東西寫到能被讀懂。</span
+							>
+						</div>
+						<div class="role">
+							<span class="role-label"
+								><i class="cat cat-079" aria-hidden="true"></i>&nbsp;<span data-i18n="role2Label"
+									>程序員</span
+								></span
+							>
+							<span class="role-note" data-i18n="role2Note"
+								>原生 JavaScript 與 Canvas，不用框架、不加建置，一個靜態資料夾就能跑。</span
+							>
+						</div>
+					</div>
+				</div>
+			</section>
+		</main>
 
-</body>
+		<footer>
+			<div class="wrap foot">
+				<div class="foot-sign">
+					<i class="cat cat-112 cat-2x" aria-hidden="true"></i>
+					<i class="cat cat-153 foot-mark" aria-hidden="true"></i>
+					<p class="foot-text">&copy; 2026 DaiEn ・ EggshellCat</p>
+				</div>
+				<p class="foot-text">
+					<a href="https://github.com/" target="_blank" rel="noopener">
+						<i class="cat cat-097" aria-hidden="true"></i>&nbsp;GitHub
+					</a>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<button class="foot-lang" id="footLangBtn" type="button">
+						<i class="cat cat-015 lang-en" aria-hidden="true"></i>&nbsp;<span class="lang-en">English</span>
+						<i class="cat cat-013 lang-zh" aria-hidden="true"></i>&nbsp;<span class="lang-zh">中文</span>
+					</button>
+				</p>
+			</div>
+		</footer>
+
+		<script src="i18n.js"></script>
+		<script src="index.js"></script>
+	</body>
 </html>
