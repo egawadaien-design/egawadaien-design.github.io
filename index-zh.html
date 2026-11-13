@@ -1,7 +1,10 @@
 <!--
 	@author: [DaiEn]
 	@Date: 2026-11-13
-	@Correction: 2
+	@Correction: 3
+	本次修正：專長列標籤欄由固定 96px 改成 max-content，標籤 nowrap、筆記欄 min-width:0，
+	          「🐱 程序員」不再被擠成兩行，長句也不會把格子撐出版面（英文版同步改了 118px 那組）
+	上次修正：修正次數 1 → 2
 -->
 <!DOCTYPE html>
 <html lang="zh-Hant">
@@ -41,6 +44,9 @@
 	.cat-153:before { content: "\F0098"; }
 	.cat-257:before { content: "\F0100"; }
 	.cat-258:before { content: "\F0101"; }
+	.cat-213:before { content: "\F00D4"; }
+	.cat-214:before { content: "\F00D5"; }
+	.cat-215:before { content: "\F00D6"; }
 	.cat-1x { font-size: 1em; }
 	.cat-2x { font-size: 2em; }
 	.cat-3x { font-size: 3em; }
@@ -140,8 +146,8 @@
 	/* ===== 專長：三行，左標籤右說明 ===== */
 	.roles-list { display: grid; gap: 0; margin-top: 6px; }
 	.role { display: grid; gap: 2px; padding: 16px 0; border-bottom: 1px solid var(--line); }
-	.role-label { font-family: var(--serif); font-size: 17px; color: var(--leaf-deep); }
-	.role-note { font-size: 14px; color: var(--ink-soft); }
+	.role-label { font-family: var(--serif); font-size: 17px; color: var(--leaf-deep); white-space: nowrap; }
+	.role-note { font-size: 14px; color: var(--ink-soft); min-width: 0; }
 
 	/* ===== 頁尾 ===== */
 	footer { padding: 34px 0 44px; border-top: 1px solid var(--line); background: var(--paper-deep); }
@@ -160,7 +166,8 @@
 		.sig-mark { font-size: 96px; }
 		.sig-label { font-size: 12px; letter-spacing: .1em; max-width: 24em; }
 		.link-row { padding: 16px 6px; }
-		.role { grid-template-columns: 96px 1fr; align-items: baseline; gap: 18px; }
+		/* 標籤欄改成依內容決定寬度：寫死像素的話「🐱 程序員」會超出欄位、被折成兩行 */
+		.role { grid-template-columns: max-content minmax(0, 1fr); align-items: baseline; gap: 18px 28px; }
 	}
 
 	/* ===== 1120px 以上：文字那一側多分一點，字不會被擠成細柱 ===== */
@@ -178,7 +185,7 @@
 <div class="top">
 	<div class="wrap top-inner">
 		<p class="top-name"><i class="cat cat-111" aria-hidden="true"></i>&nbsp;蛋殼喵 <span class="dot">・</span> DaiEn</p>
-		<a class="lang" href="index.html" hreflang="en" lang="en">EN</a>
+		<a class="lang" href="index-en.html" hreflang="en" lang="en"><i class="cat cat-015"></i></a>
 	</div>
 </div>
 

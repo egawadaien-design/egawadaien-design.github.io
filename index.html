@@ -1,7 +1,11 @@
 <!--
 	@author: [DaiEn]
 	@Date: 2026-11-13
-	@Correction: 3
+	@Correction: 5
+	本次修正：抬頭與頁尾也一併置中（.top 加 text-align、.foot 由 space-between 改成 center），三塊都與 hero 同一個中軸
+	上次修正：只留這頁真正用到的樣式（砍掉自我介紹、作品列、專長列等沒掛上的規則與多餘字級），
+	          兩個語言圖示改成 flex 置中並用 clamp 控制大小，手機與桌機都居中對齊
+	上次修正：修正次數 2 → 3
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -29,28 +33,21 @@
 		display: inline-block;
 		-webkit-font-smoothing: antialiased;
 	}
-	.cat-005:before { content: "\F0004"; }
+	/* 只留這頁用到的五個字：013 / 015（兩個語言入口）、111（抬頭）、112 / 153（頁尾） */
 	.cat-013:before { content: "\F000C"; }
-	.cat-014:before { content: "\F000D"; }
 	.cat-015:before { content: "\F000E"; }
-	.cat-078:before { content: "\F004D"; }
-	.cat-079:before { content: "\F004E"; }
-	.cat-097:before { content: "\F0060"; }
 	.cat-111:before { content: "\F006E"; }
 	.cat-112:before { content: "\F006F"; }
 	.cat-153:before { content: "\F0098"; }
-	.cat-257:before { content: "\F0100"; }
-	.cat-258:before { content: "\F0101"; }
-	.cat-1x { font-size: 1em; }
+	.cat-213:before { content: "\F00D4"; }
+	.cat-214:before { content: "\F00D5"; }
+	.cat-215:before { content: "\F00D6"; }
 	.cat-2x { font-size: 2em; }
-	.cat-3x { font-size: 3em; }
-	.cat-4x { font-size: 4em; }
-	.cat-5x { font-size: 5em; }
-	/* ===== Palette: apple green ground, olive ink, warm cream only where it can breathe ===== */
+
+	/* ===== Palette: apple green ground, olive ink ===== */
 	:root {
 		--paper: #eef7dd;        /* apple green ground */
 		--paper-deep: #e3f1c9;   /* the shallow band between blocks */
-		--cream: #fffdf3;        /* warm cream, only where there is room to breathe */
 		--ink: #2f3e25;          /* main text: deep olive */
 		--ink-soft: #5f6f4d;     /* secondary text */
 		--leaf: #7fac30;         /* the apple green itself */
@@ -61,7 +58,6 @@
 	}
 
 	* { box-sizing: border-box; margin: 0; padding: 0; }
-	img, svg { max-width: 100%; display: block; }
 
 	body {
 		background: var(--paper);
@@ -78,118 +74,62 @@
 	a { color: var(--leaf-deep); text-decoration: none; }
 	a:focus-visible { outline: 2px solid var(--leaf); outline-offset: 3px; border-radius: 3px; }
 
-	/* ===== Top: name and language only, no navigation bar ===== */
-	.top { padding: 26px 0 0; }
-	.top-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+	/* ===== Top: name only, centred like the hero ===== */
+	.top { padding: 26px 0 0; text-align: center; }
 	.top-name { font-family: var(--serif); font-size: 15px; letter-spacing: .06em; color: var(--ink-soft); }
 	.top-name .dot { color: var(--leaf); }
-	.lang { font-size: 13px; letter-spacing: .1em; color: var(--leaf-deep); }
 
-	/* ===== Hero: three lines of introduction on the left, the signature on the right ===== */
-	.hero { padding: 34px 0 46px; }
-	.hero-inner { display: grid; gap: 30px; }
-	.hero-text h1 {
-		font-family: var(--serif);
-		font-weight: 400;
-		font-size: clamp(38px, 11vw, 64px);
-		line-height: 1.18;
-		letter-spacing: .01em;
+	/* ===== Hero: the two language glyphs, centred ===== */
+	.hero { padding: 46px 0 58px; }
+	.hero-inner {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: clamp(32px, 10vw, 120px);
 	}
-	.roles {
-		margin-top: 12px;
-		font-size: 15px;
-		letter-spacing: .14em;
+	/* 圖示放大後要壓住 a 的行高，不然外框會多出一截空白 */
+	.hero a { display: block; line-height: 0; }
+	.hero .cat {
+		font-size: clamp(72px, 14vw, 132px);
 		color: var(--leaf-deep);
+		line-height: 1;
 	}
-	.lede { margin-top: 22px; max-width: 24em; color: #46543a; }
-
-	/* Both halves must be able to shrink, otherwise the epigraph on the right pushes the text flat */
-	.hero-text, .sig { min-width: 0; }
-
-	/* Signature: the glyph already feels hand-written, so it only gets a tilt and some air */
-	.sig { text-align: center; justify-self: stretch; }
-	.sig-mark {
-		font-size: clamp(60px, 17vw, 96px);
-		color: var(--leaf-deep);
-		transform: rotate(-6deg);
-		opacity: .95;
-	}
-	.sig-label {
-		display: block; margin: 8px auto 0; max-width: 26em;
-		font-size: 11px; line-height: 1.8; letter-spacing: .32em;
-		color: var(--ink-soft); overflow-wrap: anywhere;
-	}
-
-	/* ===== Works: links only, one to a row, no descriptions ===== */
-	section { padding: 34px 0 40px; border-top: 1px solid var(--line); }
-	h2 {
-		font-family: var(--serif); font-weight: 400;
-		font-size: 19px; letter-spacing: .1em; color: var(--ink);
-		margin-bottom: 6px;
-	}
-	.links { display: grid; }
-	.link-row {
-		display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
-		padding: 15px 0; border-bottom: 1px solid var(--line);
-		min-height: 48px;
-	}
-	.link-row:hover { background: var(--cream); }
-	.link-name { font-size: 15px; color: var(--ink); }
-	.link-url { font-size: 12px; letter-spacing: .03em; color: var(--ink-soft); text-align: right; white-space: nowrap; }
-
-	/* ===== Roles: three lines, label on the left, note on the right ===== */
-	.roles-list { display: grid; gap: 0; margin-top: 6px; }
-	.role { display: grid; gap: 2px; padding: 16px 0; border-bottom: 1px solid var(--line); }
-	.role-label { font-family: var(--serif); font-size: 17px; color: var(--leaf-deep); }
-	.role-note { font-size: 14px; color: var(--ink-soft); }
 
 	/* ===== Footer ===== */
-	footer { padding: 34px 0 44px; border-top: 1px solid var(--line); background: var(--paper-deep); }
-	.foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; }
+	footer { padding: 34px 0 44px; border-top: 1px solid var(--line); background: var(--paper-deep); text-align: center; }
+	.foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px; }
 	.foot-sign { display: flex; align-items: center; gap: 12px; }
 	.foot-mark { font-size: 30px; color: var(--leaf); transform: rotate(-6deg); }
 	.foot-text { font-size: 12px; letter-spacing: .06em; color: var(--ink-soft); }
-	.foot-text a { color: var(--leaf-deep); }
 
-	/* ===== From 768px up: two equal halves, so neither side eats the other ===== */
 	@media (min-width: 768px) {
 		.wrap { padding: 0 40px; }
-		.hero { padding: 56px 0 66px; }
-		.hero-inner { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 44px; }
-		.sig { justify-self: stretch; }
-		.sig-mark { font-size: 96px; }
-		.sig-label { font-size: 12px; letter-spacing: .1em; max-width: 24em; }
-		.link-row { padding: 16px 6px; }
-		.role { grid-template-columns: 118px 1fr; align-items: baseline; gap: 18px; }
-	}
-
-	/* ===== From 1120px up: give the text a little more room than the logo ===== */
-	@media (min-width: 1120px) {
-		.hero-inner { grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); gap: 56px; }
+		.hero { padding: 64px 0 76px; }
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.sig-mark, .foot-mark { transform: none; }
+		.foot-mark { transform: none; }
 	}
 </style>
 </head>
 <body>
 
 <div class="top">
-	<div class="wrap top-inner">
+	<div class="wrap">
 		<p class="top-name"><i class="cat cat-111" aria-hidden="true"></i>&nbsp;DaiEn <span class="dot">·</span> Eggshell Cat</p>
 	</div>
 </div>
 
 <main>
-	<!-- ===== About ===== -->
+	<!-- ===== 兩個語言入口：圖示置中 ===== -->
 	<section class="hero">
 		<div class="wrap hero-inner">
-			<a href="index-en.html" target="_blank" rel="noopener">
-				<i class="cat cat-015 cat-5x" aria-hidden="true"></i>
+			<a href="index-en.html">
+				<i class="cat cat-215" aria-hidden="true"></i>
 			</a>
-			<a href="index-zh.html" hreflang="zh-Hant" lang="zh-Hant">
-				<i class="cat cat-013 cat-5x" aria-hidden="true"></i>
+			<a href="index-zh.html">
+				<i class="cat cat-213" aria-hidden="true"></i>
 			</a>
 		</div>
 	</section>
