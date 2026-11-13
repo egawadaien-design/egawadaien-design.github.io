@@ -56,7 +56,7 @@
 	 *	4 = 單色出現，停 HOLD_SEC 秒後慢慢漸變成「另一色」
 	 *	填別的數字／亂填 = 當成 0 處理。
 	 *	換色節奏：HOLD_SEC 秒停住不動，再用 FADE_SEC 秒過渡完，然後換下一組，無限循環。 */
-	var COLOR_MODE = 3;
+	var COLOR_MODE = 4;
 	var HOLD_SEC = 20; // 一組顏色停留幾秒
 	var FADE_SEC = 8; // 過渡到下一個顏色組合要幾秒（越長越像「慢慢化過去」）
 
