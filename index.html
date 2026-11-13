@@ -1,11 +1,17 @@
 <!--
 	@author: [DaiEn]
-	@Date: 2026-11-13
-	@Correction: 5
-	本次修正：抬頭與頁尾也一併置中（.top 加 text-align、.foot 由 space-between 改成 center），三塊都與 hero 同一個中軸
-	上次修正：只留這頁真正用到的樣式（砍掉自我介紹、作品列、專長列等沒掛上的規則與多餘字級），
-	          兩個語言圖示改成 flex 置中並用 clamp 控制大小，手機與桌機都居中對齊
-	上次修正：修正次數 2 → 3
+	@Date: 2026-11-14
+	@Correction: 9
+	本次修正：粒子網路的點與線改成七色以上鮮艷漸變——每顆粒子的顏色從 9 色彩虹盤裡「隨機」抽
+	          （沿用原本的固定種子，所以每次重整都是同一片花花網路，但顏色順序是亂的、不是照位置排），
+	          線段兩端各取自己那顆粒子的顏色拉線性漸層，跨色區時自然過渡；
+	          三角形面紗維持原本的白，避免彩色疊太多變成一塊髒斑
+	上次修正：背景改成自己寫的「粒子網路」（節點＋近距離連線＋三點互連的淡色三角形），
+	          配色照這頁的蘋果綠紙底走（深橄欖綠的點、淺綠的線、半透明的白面紗三角形），
+	          不鋪黑底、也不引入 tsParticles；原本那顆 3D 正二十面體骨架整段移除（備份留在工作區）
+	上次修正：頁尾強制置底——body 改成垂直 flex（min-height: 100vh／100dvh），main 用 flex:1 吃掉中間空白、
+	          footer 用 flex:0 0 auto 固定高度，內容不滿一屏時頁尾也貼在視窗最下面；不用 position:fixed，
+	          免得蓋到內容、內容變長時也不必另外留 padding
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -59,6 +65,10 @@
 
 	* { box-sizing: border-box; margin: 0; padding: 0; }
 
+	/* ===== 版面：內容不滿一屏時，頁尾也要壓在視窗最底下 =====
+	   做法是把 body 變成垂直 flex：main 吃掉剩下的高度（flex:1），footer 就自然落到最底。
+	   比 position:fixed 乾淨——不會蓋到內容，內容變長（例如 index-zh）時也照樣正常往下排。 */
+	html, body { height: 100%; }
 	body {
 		background: var(--paper);
 		color: var(--ink);
@@ -67,7 +77,14 @@
 		line-height: 1.85;
 		-webkit-font-smoothing: antialiased;
 		overflow-x: hidden;
+		display: flex;
+		flex-direction: column;
+		/* vh 是舊瀏覽器的退路；dvh 才是手機位址列收合後真正可見的高度 */
+		min-height: 100vh;
+		min-height: 100dvh;
 	}
+	main { flex: 1 0 auto; }        /* 撐滿中間那段空白 */
+	footer { flex: 0 0 auto; }      /* 頁尾不隨內容伸縮，高度就是它自己的 */
 
 	.wrap { width: 100%; max-width: 860px; margin: 0 auto; padding: 0 22px; }
 
@@ -108,12 +125,26 @@
 		.hero { padding: 64px 0 76px; }
 	}
 
+	/* ===== 粒子網路背景：鋪滿視窗、墊在所有內容後面，不吃滑鼠事件 ===== */
+	#netCanvas {
+		position: fixed;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 0;
+		pointer-events: none;
+	}
+	/* 內容要浮到網路上面（沒有 position 的區塊會被蓋在後面） */
+	.top, main, footer { position: relative; z-index: 1; }
+
 	@media (prefers-reduced-motion: reduce) {
 		.foot-mark { transform: none; }
 	}
 </style>
 </head>
 <body>
+
+<canvas id="netCanvas" aria-hidden="true"></canvas>
 
 <div class="top">
 	<div class="wrap">
@@ -133,6 +164,7 @@
 			</a>
 		</div>
 	</section>
+</main>
 
 <footer>
 	<div class="wrap foot">
@@ -143,6 +175,206 @@
 		</div>
 	</div>
 </footer>
+
+<script>
+/*
+ * 粒子網路背景（自製，沒有用 tsParticles 或任何外部函式庫）
+ *
+ * 長什麼樣：一顆顆小點慢慢漂，彼此靠近就牽一條線，三顆互相連上時中間透出一塊淡淡的白，
+ *   像星座、也像一張薄薄的結構網。整片鋪滿視窗、墊在內容後面、不吃滑鼠事件。
+ *
+ * 為什麼不是黑底：這頁的紙底是蘋果綠（--paper #eef7dd），黑底會把整頁的氣質毀掉；
+ *   但點和線本來是深橄欖綠＋淺綠，整片看下去只有一個顏色。現在改成點與線都吃「彩虹盤」：
+ *   洋紅、粉、橙、金、萊姆、青綠、天藍、藍、紫共 9 色，每顆粒子隨機抽一個（順序是亂的、
+ *   不是照位置排），線段則在兩端各取自己那顆粒子的顏色拉漸層，所以一顆點跨到隔壁點時
+ *   中間會自然過渡。三角形面紗維持白色——彩色疊在白面上會變成一塊髒灰，反而醜。
+ *
+ * 粒子怎麼動：每顆走一條利薩如軌跡（x 用 sin、y 用 cos），兩個軸的頻率與相位都由固定種子決定，
+ *   所以每次重新整理都是同一片網路（不會每次載入都換一張臉）。
+ *   這裡不需要「接格」，因此頻率不必取整數，只要動作慢、看起來像在呼吸就好。
+ *
+ * 每格只做三件事：算位置 → 算距離（近的連線、三點連成三角形，先填面再畫線）→ 畫點。
+ */
+(function () {
+	var cv = document.getElementById('netCanvas');
+	if (!cv || !cv.getContext) return;
+	var ctx = cv.getContext('2d');
+	var dpr = Math.min(2, window.devicePixelRatio || 1);
+	var TAU = Math.PI * 2;
+
+	// 九色鮮艷彩虹盤（色相）：洋紅 305 → 粉 352 → 橙 14 → 金 42 → 萊姆 96 →
+	//   青綠 172 → 天藍 196 → 藍 228 → 紫 268。每顆粒子從這裡「隨機」抽一個，
+	//   所以顏色在畫面上是跳著的，不是左到右排一排
+	var PALETTE = [305, 352, 14, 42, 96, 172, 196, 228, 268];
+
+	var w = 0, h = 0, link = 0;
+	var P = [];                                     // 每顆粒子的固定資料（座標都用 0~1 正規化）
+	var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	// 固定種子的亂數（LCG）：同一顆種子永遠長出同一片網路
+	function seedRnd(seed) {
+		var s = seed % 2147483647;
+		if (s <= 0) s += 2147483646;
+		return function () {
+			s = (s * 16807) % 2147483647;
+			return (s - 1) / 2147483646;
+		};
+	}
+
+	// 建立粒子：數量跟著畫面面積走，小螢幕不擠、大螢幕不稀
+	function build() {
+		var count = Math.max(40, Math.min(110, Math.round(w * h / 16000)));
+		P.length = 0;
+		for (var i = 0; i < count; i++) {
+			var g = seedRnd(i * 7919 + 17);          // 每顆自己的種子：改數量時只會多／少尾巴那幾顆
+			P.push({
+				nx: 0.06 + 0.88 * g(),               // 軌跡中心（0~1）
+				ny: 0.08 + 0.84 * g(),
+				ax: 0.03 + 0.10 * g(),               // 左右擺幅（0~1）
+				ay: 0.03 + 0.10 * g(),               // 上下擺幅
+				fx: 0.010 + 0.030 * g(),             // 每秒繞幾圈（慢，才像呼吸）
+				fy: 0.010 + 0.030 * g(),
+				ox: g(), oy: g(),                    // 相位
+				r: 1.1 + 1.5 * g(),                  // 半徑
+				a: 0.55 + 0.45 * g(),                // 這顆多濃（0.55~1.0；點只有 1~2.6px，太淡就只剩一個灰點）
+				// 【顏色】從彩虹盤隨機抽一個色相，再抖 ±4° 免得同色號的粒子一模一樣；
+				//   用同一顆固定種子，所以重整後顏色位置不會跳，但順序本來就是亂的
+				hue: PALETTE[Math.floor(g() * PALETTE.length)] + (g() * 8 - 4)
+			});
+		}
+		link = Math.min(w, h) * 0.15;                // 連線距離：短邊的 15%
+	}
+
+	function resize() {
+		w = window.innerWidth;
+		h = window.innerHeight;
+		cv.width = Math.round(w * dpr);
+		cv.height = Math.round(h * dpr);
+		ctx.setTransform(dpr, 0, 0, dpr, 0, 0);      // 之後都用 CSS 像素座標作畫
+		build();
+	}
+
+	function draw(t) {
+		ctx.clearRect(0, 0, w, h);                   // 只清畫布，底色是 body 的蘋果綠，不鋪黑
+
+		// 1. 算這一刻所有粒子的位置
+		var px = [], py = [], pr = [], pa = [], ph = [];
+		for (var i = 0; i < P.length; i++) {
+			var p = P[i];
+			px.push((p.nx + p.ax * Math.sin(TAU * (p.fx * t + p.ox))) * w);
+			py.push((p.ny + p.ay * Math.cos(TAU * (p.fy * t + p.oy))) * h);
+			pr.push(p.r);
+			pa.push(p.a);
+			ph.push(p.hue);
+		}
+
+		// 2. 鄰居清單：距離小於 link 的算一組（三角形要找「共同鄰居」，先建表才不會 O(n³)）
+		var nb = [];
+		for (var a = 0; a < px.length; a++) {
+			var set = [];
+			for (var b = 0; b < px.length; b++) {
+				if (a === b) continue;
+				var dx = px[a] - px[b], dy = py[a] - py[b];
+				if (dx * dx + dy * dy <= link * link) set.push(b);
+			}
+			nb.push(set);
+		}
+
+		// 3. 先鋪三角形的面紗：三顆彼此都在 link 內就填一塊半透明的色面
+		//    用白色會把底下的彩色線整片洗成灰白（實測截圖看過），所以改成跟頂點同色系、
+		//    濃度壓到 0.12，看起來像一片彩色霧玻璃而不是白斑
+		var triUsed = 0;
+		for (var i2 = 0; i2 < nb.length; i2++) {
+			var triHue = ph[i2].toFixed(0);
+			var na = nb[i2];
+			for (var x = 0; x < na.length; x++) {
+				var bb = na[x];
+				if (bb <= i2 || triUsed >= 400) continue;          // 每組只畫一次；上限 400 片護住效能
+				var nbb = nb[bb];
+				for (var y = 0; y < na.length; y++) {
+					var cc = na[y];
+					if (cc <= bb || triUsed >= 400) continue;
+					if (nbb.indexOf(cc) < 0) continue;             // 第三點要同時是兩邊的鄰居
+					ctx.fillStyle = 'hsla(' + triHue + ',85%,58%,0.08)';
+					ctx.beginPath();
+					ctx.moveTo(px[i2], py[i2]);
+					ctx.lineTo(px[bb], py[bb]);
+					ctx.lineTo(px[cc], py[cc]);
+					ctx.closePath();
+					ctx.fill();
+					triUsed++;
+				}
+			}
+		}
+
+		// 4. 連線：越近越清楚，剛好碰到 link 時完全消失
+		ctx.lineWidth = 1;
+		for (var a2 = 0; a2 < px.length; a2++) {
+			var na2 = nb[a2];
+			for (var k = 0; k < na2.length; k++) {
+				var b2 = na2[k];
+				if (b2 <= a2) continue;
+				var dx2 = px[a2] - px[b2], dy2 = py[a2] - py[b2];
+				var d = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+				var al = (1 - d / link) * 0.55;                     // 最深 0.55：線也要看得出顏色，不然整片只剩點在跳
+				if (al < 0.01) continue;
+				// 【線段漸變】兩端各用自己那顆粒子的色相，中間就是一段漸層：
+				//   一顆洋紅接一顆青綠的線，會在中間慢慢變過去，整片網路才像「彩虹網」而不是單色網。
+				//   兩端同色號（機率很低）就退回純色，省一個 gradient 物件
+				var ha = ph[a2], hb = ph[b2];
+				if (Math.abs(ha - hb) > 6) {
+					var grd = ctx.createLinearGradient(px[a2], py[a2], px[b2], py[b2]);
+					grd.addColorStop(0, 'hsla(' + ha.toFixed(0) + ',95%,42%,' + al.toFixed(3) + ')');
+					grd.addColorStop(1, 'hsla(' + hb.toFixed(0) + ',95%,42%,' + al.toFixed(3) + ')');
+					ctx.strokeStyle = grd;
+				} else {
+					ctx.strokeStyle = 'hsla(' + ha.toFixed(0) + ',95%,42%,' + al.toFixed(3) + ')';
+				}
+				ctx.beginPath();
+				ctx.moveTo(px[a2], py[a2]);
+				ctx.lineTo(px[b2], py[b2]);
+				ctx.stroke();
+			}
+		}
+
+		// 5. 點：外圈一層很淡的光暈、內圈一顆實心點（淺底上要有「微微發亮」只能靠這兩層）
+		//    兩層都吃這顆抽到的色相：外圈亮一點（55%）、內圈深一點（45%），顏色才不會糊在紙底上
+		for (var n = 0; n < px.length; n++) {
+			var hueN = ph[n].toFixed(0);
+			ctx.fillStyle = 'hsla(' + hueN + ',95%,58%,' + (pa[n] * 0.30).toFixed(3) + ')';
+			ctx.beginPath();
+			ctx.arc(px[n], py[n], pr[n] * 2.6, 0, TAU);
+			ctx.fill();
+			ctx.fillStyle = 'hsla(' + hueN + ',95%,42%,' + pa[n].toFixed(3) + ')';
+			ctx.beginPath();
+			ctx.arc(px[n], py[n], pr[n], 0, TAU);
+			ctx.fill();
+		}
+	}
+
+	var last = 0, clock = 0;
+	function loop(now) {
+		if (!last) last = now;
+		var dt = Math.min(0.05, (now - last) / 1000);   // 夾住 dt：切回分頁時不會一次跳一大格
+		last = now;
+		clock += dt;
+		draw(clock);
+		requestAnimationFrame(loop);
+	}
+
+	window.addEventListener('resize', function () {
+		resize();
+		if (reduced) draw(0.8);      // 靜態模式：縮放後補畫一格，不然畫面會是舊尺寸的殘影
+	});
+
+	resize();
+	if (reduced) {
+		draw(0.8);                   // 不喜歡動態的人：固定一個好看的一格
+	} else {
+		requestAnimationFrame(loop);
+	}
+})();
+</script>
 
 </body>
 </html>
