@@ -1,7 +1,7 @@
 /*
 	@author: [DaiEn]
-	@Date: 2026-11-14
-	@Correction: 3
+	@Date: 2026-11-19
+	@Correction: 6
 */
 
 /* ===== 自製圖標字型：簽名用 cat-153，字碼 \F0098（對應 webfonts/font.css）
@@ -23,8 +23,11 @@
 }
 .cat-005:before { content: "\F0004"; }
 .cat-013:before { content: "\F000C"; }
-.cat-014:before { content: "\F000D"; }
 .cat-015:before { content: "\F000E"; }
+.cat-016:before { content: "\F000F"; }
+.cat-020:before { content: "\F0013"; }
+.cat-024:before { content: "\F0017"; }
+.cat-031:before { content: "\F001E"; }
 .cat-078:before { content: "\F004D"; }
 .cat-079:before { content: "\F004E"; }
 .cat-097:before { content: "\F0060"; }
@@ -63,6 +66,11 @@
 html:lang(en) {
 	--serif: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
 	--sans: "Segoe UI", -apple-system, "Helvetica Neue", sans-serif;
+}
+/* 日文模式：襯線與黑體都換成日系字型，避免中文宋體把假名撑歪 */
+html:lang(ja) {
+	--serif: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
+	--sans: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", -apple-system, sans-serif;
 }
 /* 英文標題用襯線體，字距要比中文鬆一點點才不會糊在一起 */
 html:lang(en) .hero-text h1 { letter-spacing: .01em; }
@@ -240,6 +248,8 @@ h2 {
 	margin-bottom: 6px;
 }
 .links { display: grid; }
+/* 同一區內第二組標題（連接）：跟上面那組連結留一段呼吸空間 */
+.links + h2 { margin-top: 26px; }
 .link-row {
 	display: flex;
 	align-items: baseline;

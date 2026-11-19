@@ -1,15 +1,15 @@
 <!--
 	@author: [DaiEn]
-	@Date: 2026-11-14
-	@Correction: 15
+	@Date: 2026-11-19
+	@Correction: 20
 -->
 <!doctype html>
 <html lang="zh-Hant">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>蛋殼喵 DaiEn — 作家・程序員・企業負責人</title>
-		<meta name="description" content="蛋殼喵 DaiEn" />
+		<title>蛋壳喵 DaiEn — 作家・程序员</title>
+		<meta name="description" content="蛋壳喵 DaiEn" />
 		<link
 			rel="icon"
 			href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23a7cf52'/%3E%3Cpath d='M32 15c8 0 14 7 14 16 0 10-6 18-14 18S18 41 18 31c0-9 6-16 14-16z' fill='%23f7fbef'/%3E%3Ccircle cx='26' cy='32' r='2.6' fill='%232f3e25'/%3E%3Ccircle cx='38' cy='32' r='2.6' fill='%232f3e25'/%3E%3Cpath d='M32 37l-3 4h6z' fill='%237fac30'/%3E%3C/svg%3E"
@@ -61,6 +61,7 @@
 			.lang .cat { font-size: 22px; color: var(--leaf-deep); }
 			html:lang(zh-Hant) .lang-zh { display: none; }
 			html:lang(en) .lang-en { display: none; }
+			html:lang(ja) .lang-ja { display: none; }
 
 			.foot-lang {
 				background: none;
@@ -96,12 +97,13 @@
 		<div class="top">
 			<div class="wrap top-inner">
 				<p class="top-name">
-					<i class="cat cat-111" aria-hidden="true"></i>&nbsp;<span data-i18n="brand">蛋殼喵</span>
+					<i class="cat cat-111" aria-hidden="true"></i>&nbsp;<span data-i18n="brand">蛋壳喵</span>
 					<span class="dot">・</span> <span data-i18n="brandSub">DaiEn</span>
 				</p>
-				<button class="lang" id="langBtn" type="button" aria-label="切換語言 / Switch language">
-					<i class="cat cat-015 lang-en" aria-hidden="true"></i>
-					<i class="cat cat-013 lang-zh" aria-hidden="true"></i>
+				<button class="lang" id="langBtn" type="button" aria-label="選擇語言 / Choose language">
+					<i class="cat cat-015 lang-en" data-lang="en" aria-hidden="true"></i>
+					<i class="cat cat-013 lang-zh" data-lang="zh-Hant" aria-hidden="true"></i>
+					<i class="cat cat-016 lang-ja" data-lang="ja" aria-hidden="true"></i>
 				</button>
 			</div>
 		</div>
@@ -113,13 +115,13 @@
 					<div class="hero-text">
 						<h1><i class="cat cat-153 sig-mark" role="img" aria-label="DaiEn"></i></h1>
 						<p class="roles">
-							<span data-i18n="roles1">作家・程序員</span><br /><span data-i18n="roles2"
-								>寫下來的，才開始存在</span
+							<span data-i18n="roles1">作家・程序员</span><br /><span data-i18n="roles2"
+								>写下来的，才开始存在</span
 							>
 						</p>
 						<p class="lede">
 							<i class="cat cat-005" aria-hidden="true"></i>&nbsp;<span data-i18n="lede"
-								>白天寫程式，晚上寫小說。兩件事其實是同一件：把一段看不見的節奏，變成別人也能感受到的東西。</span
+								>白天写程式，晚上写小说。两件事其实是同一件：把一段看不见的节奏，变成别人也能感受到的东西。</span
 							>
 						</p>
 					</div>
@@ -135,23 +137,26 @@
 			<!-- ===== 作品：只留連結 ===== -->
 			<section id="work">
 				<div class="wrap">
-					<h2><span data-i18n="workTitle">作品</span></h2>
+					<h2><i class="cat cat-020" aria-hidden="true"></i>&nbsp;<span data-i18n="workTitle">作品</span></h2>
 					<div class="links">
 						<a class="link-row" href="#" target="_blank" rel="noopener">
-							<span class="link-name" data-i18n="work1">如果死亡只是起點</span>
+							<span class="link-name" data-i18n="work1">如果死亡只是起点</span>
 							<span class="link-url"><i class="cat cat-005" aria-hidden="true"></i>&nbsp;</span>
 						</a>
 						<a class="link-row" href="https://apng.top/" target="_blank" rel="noopener">
 							<span class="link-name" data-i18n="work2">蛋壳喵 APNG 工具</span>
 							<span class="link-url"><i class="cat cat-257" aria-hidden="true"></i>&nbsp;apng.top</span>
 						</a>
+					</div>
+					<h2><i class="cat cat-031" aria-hidden="true"></i>&nbsp;<span data-i18n="linkTitle">連接</span></h2>
+					<div class="links">
 						<a
 							class="link-row"
 							href="https://github.com/egawadaien-design/eggshell-cat-apng-tool"
 							target="_blank"
 							rel="noopener"
 						>
-							<span class="link-name" data-i18n="work3">GitHub 託管代碼</span>
+							<span class="link-name" data-i18n="work3">GitHub 托管代码</span>
 							<span class="link-url"><i class="cat cat-097" aria-hidden="true"></i>&nbsp;github.com</span>
 						</a>
 					</div>
@@ -161,7 +166,7 @@
 			<!-- ===== 專長 ===== -->
 			<section id="roles">
 				<div class="wrap">
-					<h2><span data-i18n="rolesTitle">我在做的事</span></h2>
+					<h2><i class="cat cat-024" aria-hidden="true"></i>&nbsp;<span data-i18n="rolesTitle">我在做的事</span></h2>
 					<div class="roles-list">
 						<div class="role">
 							<span class="role-label"
@@ -170,17 +175,17 @@
 								></span
 							>
 							<span class="role-note" data-i18n="role1Note"
-								>長篇小說，人物與世界觀設定；喜歡把複雜的東西寫到能被讀懂。</span
+								>长篇小说，人物与世界观设定；喜欢把复杂的东西写到能被读懂。嗯！？看不懂...那就对了！</span
 							>
 						</div>
 						<div class="role">
 							<span class="role-label"
 								><i class="cat cat-079" aria-hidden="true"></i>&nbsp;<span data-i18n="role2Label"
-									>程序員</span
+									>程序员</span
 								></span
 							>
 							<span class="role-note" data-i18n="role2Note"
-								>原生 JavaScript 與 Canvas，不用框架、不加建置，一個靜態資料夾就能跑。</span
+								>JavaScript、TypeScript、JAVA、Kotlin、C++、C# 嗯~这些都略懂，稍微能应用，自己能瞎搞出很多游戏。</span
 							>
 						</div>
 					</div>
@@ -201,8 +206,9 @@
 					</a>
 					&nbsp;&nbsp;&nbsp;&nbsp;
 					<button class="foot-lang" id="footLangBtn" type="button">
-						<i class="cat cat-015 lang-en" aria-hidden="true"></i>&nbsp;<span class="lang-en">English</span>
-						<i class="cat cat-013 lang-zh" aria-hidden="true"></i>&nbsp;<span class="lang-zh">中文</span>
+						<i class="cat cat-015 lang-en" data-lang="en" aria-hidden="true"></i>&nbsp;<span class="lang-en" data-lang="en">English</span>
+						<i class="cat cat-013 lang-zh" data-lang="zh-Hant" aria-hidden="true"></i>&nbsp;<span class="lang-zh" data-lang="zh-Hant">中文</span>
+						<i class="cat cat-016 lang-ja" data-lang="ja" aria-hidden="true"></i>&nbsp;<span class="lang-ja" data-lang="ja">日本語</span>
 					</button>
 				</p>
 			</div>
