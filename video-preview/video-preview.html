@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<!--
+	MAIN 背景影片獨立預覽（開發用工具，不進遊戲流程）
+	四組背景：前兩組「開場片播完 → 無縫交棒循環片」，後兩組無開場片直接循環。
+	開場到循環的接縫：循環片一進頁就預載並解出第一幀，開場片快結束時再預熱，
+	交棒瞬間直接上場，避免白畫面／黑格。
+
+	@author DaiEn
+	@Date 2026-11-19
+	@Correction 1
+-->
+<html lang="zh-Hant">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>背景影片預覽 · EggshellCat</title>
+	<style>
+		:root {
+			--paper: #F8F1E1;
+			--card: #FFFBF1;
+			--sand: #EADCC0;
+			--ink: #241D14;
+			--ink-2: #5C5140;
+			--line: #D3BE98;
+			--gold: #A3742A;
+			--teal: #1B5B54;
+			--font: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", "Segoe UI", sans-serif;
+			--mono: "Cascadia Code", "Consolas", "Courier New", monospace;
+		}
+
+		* { box-sizing: border-box; }
+
+		body {
+			margin: 0;
+			color: var(--ink);
+			background-color: var(--paper);
+			background-image: radial-gradient(rgba(36, 29, 20, 0.05) 1px, transparent 1px);
+			background-size: 5px 5px;
+			font: 15px/1.55 var(--font);
+			-webkit-text-size-adjust: 100%;
+		}
+
+		.bar {
+			padding: 22px 18px 14px;
+			border-bottom: 1px solid var(--line);
+		}
+
+		.bar h1 {
+			margin: 0 0 4px;
+			font-size: 23px;
+			letter-spacing: -0.01em;
+		}
+
+		.bar .sub {
+			color: var(--ink-2);
+			font-size: 13px;
+		}
+
+		.bar .sub b {
+			color: var(--gold);
+			font-family: var(--mono);
+		}
+
+		.host {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 16px;
+			padding: 18px;
+		}
+
+		.card {
+			background: var(--card);
+			border: 1px solid var(--line);
+			border-radius: 12px;
+			padding: 12px 14px 14px;
+			box-shadow: 0 2px 6px rgba(36, 29, 20, 0.08);
+			width: 264px;
+		}
+
+		.card h2 {
+			margin: 0 0 2px;
+			font-size: 15px;
+			font-family: var(--mono);
+			color: var(--teal);
+		}
+
+		.card .meta {
+			color: var(--ink-2);
+			font-size: 12px;
+			margin-bottom: 10px;
+		}
+
+		.stage {
+			position: relative;
+			width: 100%;
+			aspect-ratio: 1 / 1;
+			background: #1A150E;
+			border: 1px solid var(--sand);
+			border-radius: 10px;
+			overflow: hidden;
+		}
+
+		.stage video {
+			position: absolute;
+			inset: 0;
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+			background: #1A150E;
+		}
+
+		.stage video.off {
+			opacity: 0;
+			pointer-events: none;
+		}
+
+		.status {
+			margin-top: 10px;
+			font-family: var(--mono);
+			font-size: 12px;
+			color: var(--ink-2);
+			min-height: 18px;
+		}
+
+		.status .seg {
+			color: var(--teal);
+		}
+
+		.status .fail {
+			color: #8E3C1D;
+		}
+
+		.btns {
+			margin-top: 8px;
+			display: flex;
+			gap: 8px;
+		}
+
+		.btns button {
+			font: 13px var(--font);
+			color: var(--card);
+			background: var(--teal);
+			border: 1px solid var(--teal);
+			border-radius: 8px;
+			padding: 6px 12px;
+			cursor: pointer;
+		}
+
+		.btns button:hover {
+			background: var(--gold);
+			border-color: var(--gold);
+		}
+
+		.note {
+			padding: 0 18px 24px;
+			color: var(--ink-2);
+			font-size: 13px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="bar">
+		<h1>MAIN 背景預覽 To 小媛醬</h1>
+		<div class="sub">共 <b>4</b> 組：前兩組開場片播完無縫交棒循環片，後兩組直接循環；影片皆靜音播放</div>
+	</div>
+
+	<div id="host" class="host"></div>
+	<div id="note" class="note"></div>
+
+	<script>
+		/**
+		 * 背景影片預覽
+		 *
+		 * 路徑相對 tools/video-preview/ 一層，對應 static/assets/art/video/。
+		 * 無縫接縫做法與遊戲端 DNVideoPicture 一致：
+		 *   1. 循環片進頁就 preload=auto，先解出第一幀待命；
+		 *   2. 開場片快播完時再預熱一次，確保解碼器有資料；
+		 *   3. 開場片 ended 當下把循環片送上台、從 0 秒起播，中間不 seek 空白。
+		 */
+
+		var VIDEO_DIR = "../../assets/art/video/";
+
+		// 四組：start 為開場片（可為 null），end 為接棒後無限循環的片段
+		var GROUPS = [
+			{ title: "第一組", start: "start1.webm", end: "end1.webm" },
+			{ title: "第二組", start: "start2.webm", end: "end2.webm" },
+			{ title: "第三組", start: null,          end: "end3.webm" },
+			{ title: "第四組", start: null,          end: "end4.webm" }
+		];
+
+		// 開場片剩餘不到這個秒數就先預熱循環片
+		var WARM_AHEAD_SEC = 0.5;
+
+		/**
+		 * 建立一支靜音、可內嵌播放的影片元素
+		 * @param {string} src 檔名（不含目錄）
+		 * @param {boolean} loop 是否原生循環
+		 */
+		function makeVideo(src, loop) {
+			var v = document.createElement("video");
+			v.src = VIDEO_DIR + src;
+			v.muted = true;
+			v.preload = "auto";
+			v.loop = !!loop;
+			v.setAttribute("playsinline", "");
+			v.setAttribute("webkit-playsinline", "");
+			v.setAttribute("muted", "");
+			v.setAttribute("aria-hidden", "true");
+			return v;
+		}
+
+		/** 秒數顯示成 x.xs */
+		function fmtSec(sec) {
+			if (!sec || isNaN(sec)) return "--";
+			return sec.toFixed(1) + "s";
+		}
+
+		/**
+		 * 綁定一組背景影片到卡片
+		 * @param {Object} cfg { title, start, end }
+		 */
+		function bindGroup(cfg) {
+			var card = document.createElement("div");
+			card.className = "card";
+
+			var h2 = document.createElement("h2");
+			h2.textContent = cfg.title;
+			card.appendChild(h2);
+
+			var meta = document.createElement("div");
+			meta.className = "meta";
+			meta.textContent = cfg.start
+				? cfg.start + " 播完 → 循環 " + cfg.end
+				: "無開場片，直接循環 " + cfg.end;
+			card.appendChild(meta);
+
+			var stage = document.createElement("div");
+			stage.className = "stage";
+			card.appendChild(stage);
+
+			var status = document.createElement("div");
+			status.className = "status";
+			card.appendChild(status);
+
+			var endEl = makeVideo(cfg.end, true);
+			stage.appendChild(endEl);
+
+			var startEl = null;
+			var endReady = false;
+			var switched = false;
+
+			function setStatus(html) {
+				status.innerHTML = html;
+			}
+
+			// 循環片第一幀解好了 → 隨時可以上場
+			endEl.addEventListener("loadeddata", function() {
+				endReady = true;
+			});
+
+			endEl.addEventListener("error", function() {
+				setStatus('<span class="fail">循環片載入失敗：' + cfg.end + "</span>");
+			});
+
+			// 預熱循環片：短暫播放再暫停，逼解碼器把第一幀交出來
+			function warmEnd() {
+				if (endReady) return;
+				var p = endEl.play();
+				if (p && p["catch"]) {
+					p["catch"](function() {});
+				}
+				endEl.pause();
+			}
+
+			// 開場片播完 → 無縫交棒循環片
+			function switchToLoop() {
+				if (switched) return;
+				switched = true;
+
+				if (startEl) {
+					startEl.classList.add("off");
+					try { startEl.pause(); } catch (e) {}
+				}
+				endEl.classList.remove("off");
+				try { endEl.currentTime = 0; } catch (e) {}
+				var p = endEl.play();
+				if (p && p["catch"]) {
+					p["catch"](function() {});
+				}
+				setStatus('目前：<span class="seg">循環 ' + cfg.end + "</span>");
+			}
+
+			if (cfg.start) {
+				startEl = makeVideo(cfg.start, false);
+				stage.insertBefore(startEl, endEl); // 開場片在底層，循環片蓋在上面
+				endEl.classList.add("off");
+
+				startEl.addEventListener("loadedmetadata", function() {
+					setStatus('目前：<span class="seg">開場 ' + cfg.start + "</span>（" +
+						fmtSec(startEl.duration) + "）");
+				});
+
+				// 快到結尾先預熱循環片，避免交棒時才開始解碼
+				startEl.addEventListener("timeupdate", function() {
+					var dur = startEl.duration;
+					if (dur && !isNaN(dur) && dur - startEl.currentTime <= WARM_AHEAD_SEC) {
+						warmEnd();
+					}
+				});
+
+				startEl.addEventListener("ended", switchToLoop);
+
+				startEl.addEventListener("error", function() {
+					setStatus('<span class="fail">開場片載入失敗：' + cfg.start + "</span>");
+				});
+
+				// 自動播放開場片（靜音可自動播放）
+				var p = startEl.play();
+				if (p && p["catch"]) {
+					p["catch"](function() {});
+				}
+			} else {
+				// 沒有開場片：循環片直接上場
+				endEl.classList.remove("off");
+				endEl.addEventListener("loadedmetadata", function() {
+					setStatus('目前：<span class="seg">循環 ' + cfg.end + "</span>（" +
+						fmtSec(endEl.duration) + "）");
+				});
+				var p = endEl.play();
+				if (p && p["catch"]) {
+					p["catch"](function() {});
+				}
+			}
+
+			// 重播：有開場片就從開場片重來，否則循環片回到 0 秒
+			var btns = document.createElement("div");
+			btns.className = "btns";
+			var replay = document.createElement("button");
+			replay.textContent = "重播";
+			replay.addEventListener("click", function() {
+				switched = false;
+				if (startEl) {
+					endEl.pause();
+					endEl.classList.add("off");
+					startEl.classList.remove("off");
+					try { startEl.currentTime = 0; } catch (e) {}
+					var p = startEl.play();
+					if (p && p["catch"]) p["catch"](function() {});
+					setStatus('目前：<span class="seg">開場 ' + cfg.start + "</span>");
+				} else {
+					try { endEl.currentTime = 0; } catch (e) {}
+					var p = endEl.play();
+					if (p && p["catch"]) p["catch"](function() {});
+					setStatus('目前：<span class="seg">循環 ' + cfg.end + "</span>");
+				}
+			});
+			btns.appendChild(replay);
+			card.appendChild(btns);
+
+			return card;
+		}
+
+		(function() {
+			var host = document.getElementById("host");
+			var note = document.getElementById("note");
+
+			GROUPS.forEach(function(cfg) {
+				host.appendChild(bindGroup(cfg));
+			});
+
+			note.textContent = "提示：本頁需經本機伺服器開啟（直接用 file:// 可能被瀏覽器擋影片載入）；交棒若有卡頓，多為循環片尚未解完第一幀，可按重播再看一次。";
+		})();
+	</script>
+</body>
+
+</html>
