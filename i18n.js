@@ -1,7 +1,7 @@
 /*
 	@author: [DaiEn]
-	@Date: 2026-11-19
-	@Correction: 4
+	@Date: 2026-11-23
+	@Correction: 5
 */
 (function () {
 	'use strict';
@@ -27,6 +27,12 @@
 			work1: '如果死亡只是起点',
 			work2: '蛋壳喵 APNG 工具',
 			work3: 'GitHub 托管代码',
+			work4: '蛋壳大冒险',
+			work5: '蛋壳大冒险-地图障碍点设置工具',
+			work6: '蛋壳大冒险-关卡生成工具',
+			work7: '蛋壳喵 Emoji',
+			work8: '蛋壳大冒险-NPC图片查看工具',
+			work9: '蛋壳大冒险-MAIN视频检视工具',
 			rolesTitle: '我在做的事',
 			role1Label: '作家',
 			role1Note: '长篇小说，人物与世界观设定；喜欢把复杂的东西写到能被读懂。嗯！？看不懂...那就对了！',
@@ -47,6 +53,12 @@
 			work1: 'If Death Were Only the Beginning',
 			work2: 'Eggshell Cat APNG Tool',
 			work3: 'Code hosted on GitHub',
+			work4: 'Eggshell Adventure',
+			work5: 'Eggshell Adventure Map Tool',
+			work6: 'Eggshell Adventure Level Tool',
+			work7: 'Eggshell Cat Emoji',
+			work8: 'Eggshell Adventure NPC Image Viewer',
+			work9: 'Eggshell Adventure MAIN Video Viewer',
 			rolesTitle: 'What I do',
 			role1Label: 'Writer',
 			role1Note:
@@ -63,12 +75,18 @@
 			roles1: '作家・プログラマー',
 			roles2: '書かれて、はじめて存在する',
 			lede: '昼はプログラムを書き、夜は小説を書く。どちらも本質は同じこと。見えないリズムを、誰かが感じられる形にすること。',
-			sigLabel: '過ぎ去りしすべて、来たるたるすべて\u00a0\u00a0\u00a0\u00a0存在の輪、永遠に回り続ける',
+			sigLabel: '過ぎ去りしすべて、来たるべきすべて\u00a0\u00a0\u00a0\u00a0存在の輪、永遠に回り続ける',
 			workTitle: '作品',
 			linkTitle: 'リンク',
 			work1: 'もし死が始まりにすぎないなら',
 			work2: 'エッグシェルキャット APNG ツール',
 			work3: 'GitHub でホストするコード',
+			work4: 'エッグシェルアドベンチャー',
+			work5: 'エッグシェルアドベンチャー Map ツール',
+			work6: 'エッグシェルアドベンチャー Level ツール',
+			work7: 'エッグシェルキャット Emoji',
+			work8: 'エッグシェルアドベンチャー NPC 画像ビューア',
+			work9: 'エッグシェルアドベンチャー MAIN 動画ビューア',
 			rolesTitle: '私がしていること',
 			role1Label: '作家',
 			role1Note: '長編小説、人物と世界観の設定。複雑なものを読める形に書くのが好き。ん！？わからない\u2026それでいい！',
